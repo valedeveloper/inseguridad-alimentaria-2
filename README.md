@@ -105,3 +105,12 @@ La implementación está en [el DAG principal](dags/etl_dag.py), [la lógica del
 | Producción 2025 igual a cero | Representa una caída del 100 % únicamente si es un cero observado válido y la base 2024 es positiva. |
 | Integración | Comprobar unicidad departamental y conservar el número de hogares de la ECV. |
 | Relación con R1–R5 | R6 y R7 amplían el contexto territorial de R1; R2–R5 mantienen su alcance. Los indicadores agrícolas describen departamentos, no producción de cada hogar. |
+
+### Despliegue del entorno
+
+Desde la raíz del proyecto, en un terminal PowerShell:
+
+```powershell
+docker compose config --quiet
+docker compose up -d --build
+```
