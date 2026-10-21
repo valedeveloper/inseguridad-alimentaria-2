@@ -1,0 +1,161 @@
+cultivo,grupo_cultivo,subgrupo,incluido,motivo
+Arroz,Cereales,Cereales,si,Grano de consumo humano directo
+Avena,Cereales,Cereales,si,Grano de consumo humano directo
+Maíz,Cereales,Cereales,si,Grano de consumo humano directo | Excepcion declarada: parte de la produccion es maiz amarillo para alimento animal; se conserva por ser base de la dieta y no separable por cultivo
+Millo,Cereales,Cereales,si,Grano de consumo humano directo
+Quinua,Cereales,Cereales,si,Grano de consumo humano directo
+Trigo,Cereales,Cereales,si,Grano de consumo humano directo
+Agraz - mortiño,Frutales,Demás frutales,si,Fruta de consumo directo
+Aguacate,Frutales,Demás frutales,si,Fruta de consumo directo
+Anón,Frutales,Anonáceas,si,Fruta de consumo directo
+Arazá,Frutales,Mirtáceas,si,Fruta de consumo directo
+Arbol de pan o pepa del pan,Frutales,Demás frutales,si,Fruta de consumo directo
+Arándano,Frutales,Demás frutales,si,Fruta de consumo directo
+Asaí,Frutales,Aráceas,si,Fruta de consumo directo
+Badea,Frutales,Pasifloráceas,si,Fruta de consumo directo
+Banano,Frutales,Demás frutales,si,Fruta de consumo directo
+Borojó,Frutales,Demás frutales,si,Fruta de consumo directo
+Brevo,Frutales,Demás frutales,si,Fruta de consumo directo
+Caimo,Frutales,Demás frutales,si,Fruta de consumo directo
+Carambolo,Frutales,Demás frutales,si,Fruta de consumo directo
+Chamba,Frutales,Mirtáceas,si,Fruta de consumo directo
+Chirimoya,Frutales,Anonáceas,si,Fruta de consumo directo
+Chontaduro,Frutales,Aráceas,si,Fruta de consumo directo
+"Cidra, poncil",Frutales,Cítricos,si,Fruta de consumo directo
+Ciruela,Frutales,Caducifolios,si,Fruta de consumo directo
+Coco,Frutales,Aráceas,si,Fruta de consumo directo
+Copoazú,Frutales,Demás frutales,si,Fruta de consumo directo
+Corozo,Frutales,Aráceas,si,Fruta de consumo directo
+Curuba,Frutales,Pasifloráceas,si,Fruta de consumo directo
+Durazno o albaricoque,Frutales,Caducifolios,si,Fruta de consumo directo
+Dátil,Frutales,Aráceas,si,Fruta de consumo directo
+Feijoa,Frutales,Mirtáceas,si,Fruta de consumo directo
+Frambuesa,Frutales,Demás frutales,si,Fruta de consumo directo
+Fresa,Frutales,Demás frutales,si,Fruta de consumo directo
+Granadilla,Frutales,Pasifloráceas,si,Fruta de consumo directo
+Guanábana,Frutales,Anonáceas,si,Fruta de consumo directo
+Guayaba,Frutales,Mirtáceas,si,Fruta de consumo directo
+Gulupa o cholupa,Frutales,Pasifloráceas,si,Fruta de consumo directo
+Higo,Frutales,Demás frutales,si,Fruta de consumo directo
+Limón,Frutales,Cítricos,si,Fruta de consumo directo
+Lulo,Frutales,Solanáceas,si,Fruta de consumo directo
+Macadamia,Frutales,Demás frutales,si,Fruta de consumo directo
+Mamoncillo,Frutales,Demás frutales,si,Fruta de consumo directo
+Mandarina,Frutales,Cítricos,si,Fruta de consumo directo
+Mango,Frutales,Demás frutales,si,Fruta de consumo directo
+Mangostino,Frutales,Demás frutales,si,Fruta de consumo directo
+Manzana,Frutales,Caducifolios,si,Fruta de consumo directo
+Maracuyá,Frutales,Pasifloráceas,si,Fruta de consumo directo
+Marañón,Frutales,Demás frutales,si,Fruta de consumo directo
+Mora,Frutales,Demás frutales,si,Fruta de consumo directo
+Naranja,Frutales,Cítricos,si,Fruta de consumo directo
+Noni,Frutales,Demás frutales,si,Fruta de consumo directo
+Níspero,Frutales,Demás frutales,si,Fruta de consumo directo
+Papaya,Frutales,Demás frutales,si,Fruta de consumo directo
+Papayuela -Babaco,Frutales,Demás frutales,si,Fruta de consumo directo
+Pera,Frutales,Caducifolios,si,Fruta de consumo directo
+Pitahaya,Frutales,Demás frutales,si,Fruta de consumo directo
+Piña,Frutales,Demás frutales,si,Fruta de consumo directo
+Plátano,Frutales,Demás frutales,si,Fruta de consumo directo
+Pomarrosa,Frutales,Mirtáceas,si,Fruta de consumo directo
+Pomelo,Frutales,Cítricos,si,Fruta de consumo directo
+Rambután,Frutales,Demás frutales,si,Fruta de consumo directo
+Tamarindo,Frutales,Demás frutales,si,Fruta de consumo directo
+Tangelo,Frutales,Cítricos,si,Fruta de consumo directo
+Tomate de árbol,Frutales,Solanáceas,si,Fruta de consumo directo
+Toronja,Frutales,Cítricos,si,Fruta de consumo directo
+Uchuva,Frutales,Solanáceas,si,Fruta de consumo directo
+Uva,Frutales,Demás frutales,si,Fruta de consumo directo
+Uva Caimarona,Frutales,Demás frutales,si,Fruta de consumo directo
+Zapote,Frutales,Demás frutales,si,Fruta de consumo directo
+Acelga,Hortalizas,Hortalizas de hoja,si,Hortaliza de consumo directo
+Ahuyama,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Ajo,Hortalizas,Hortalizas de raíz,si,Hortaliza de consumo directo
+Ají,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Alcachofa,Hortalizas,Hortalizas de flor,si,Hortaliza de consumo directo
+Apio,Hortalizas,Hortalizas de tallo,si,Hortaliza de consumo directo
+Batata,Hortalizas,Hortalizas de raíz,si,Hortaliza de consumo directo
+Berenjena,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Brócoli,Hortalizas,Hortalizas de flor,si,Hortaliza de consumo directo
+"Calabacín, calabaza",Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Cebolla de bulbo,Hortalizas,Hortalizas de raíz,si,Hortaliza de consumo directo
+Cebolla de rama,Hortalizas,Hortalizas de tallo,si,Hortaliza de consumo directo
+Cilantro,Hortalizas,Hortalizas de hoja,si,Hortaliza de consumo directo
+Col,Hortalizas,Hortalizas de hoja,si,Hortaliza de consumo directo
+Coliflor,Hortalizas,Hortalizas de flor,si,Hortaliza de consumo directo
+Espinaca,Hortalizas,Hortalizas de hoja,si,Hortaliza de consumo directo
+Espárrago,Hortalizas,Hortalizas de tallo,si,Hortaliza de consumo directo
+Guatila,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Lechuga,Hortalizas,Hortalizas de hoja,si,Hortaliza de consumo directo
+Melón,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Palmito,Hortalizas,Hortalizas de tallo,si,Hortaliza de consumo directo
+Patilla,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Pepino Cohombro,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Pepino Guiso,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Pimentón,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Remolacha,Hortalizas,Hortalizas de raíz,si,Hortaliza de consumo directo
+Repollo,Hortalizas,Hortalizas de hoja,si,Hortaliza de consumo directo
+Rábano,Hortalizas,Hortalizas de raíz,si,Hortaliza de consumo directo
+Tomate,Hortalizas,Hortalizas de fruto,si,Hortaliza de consumo directo
+Zanahoria,Hortalizas,Hortalizas de raíz,si,Hortaliza de consumo directo
+Arveja,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Frijol,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Garbanzo,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Guama,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Guandul,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Haba,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Habichuela,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Maní,Leguminosas,Leguminosas,si,Leguminosa de consumo directo
+Achira,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Arracacha,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+"Hibias, ocas",Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+"Malanga, achín, yota, papa china, bore",Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Nabo,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Papa,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Ulluco,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Yuca,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Ñame,Raíces y tubérculos,Raíces y tubérculos,si,Raíz o tubérculo de consumo directo
+Cebada,Cereales,Cereales,no,Destino mayoritario no es alimento humano directo (alimento animal / industria cervecera); criterio aplicado por decision del usuario
+Sorgo,Cereales,Cereales,no,Destino mayoritario no es alimento humano directo (alimento animal / industria cervecera); criterio aplicado por decision del usuario
+Achiote,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Albahaca,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Cardamomo,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Chiraran - albahaca,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Cimarrón,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Estevia,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Jengibre,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Laurel,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Limonaria,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Manzanilla,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Menta,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Moringa,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Orégano,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+"Otros cultivos para condimentos, bebidas medicinales y aromáticas","Cultivos para condimentos, bebidas medicinales y aromáticas","Cultivos para condimentos, bebidas medicinales y aromáticas",no,"Aromática, medicinal o condimento: no es alimento básico"
+Perejil,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Pimienta,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Plantas aromáticas,"Cultivos para condimentos, bebidas medicinales y aromáticas","Cultivos para condimentos, bebidas medicinales y aromáticas",no,"Aromática, medicinal o condimento: no es alimento básico"
+Romero,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Ruda,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Ruscus,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Stevia,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Sábila,"Cultivos para condimentos, bebidas medicinales y aromáticas",Medicinales,no,"Aromática, medicinal o condimento: no es alimento básico"
+Tomillo,"Cultivos para condimentos, bebidas medicinales y aromáticas",Condimentos,no,"Aromática, medicinal o condimento: no es alimento básico"
+Toronjil,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Té,"Cultivos para condimentos, bebidas medicinales y aromáticas",Aromáticas,no,"Aromática, medicinal o condimento: no es alimento básico"
+Algodón,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Cacao,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Café,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Caña,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,Excluida por decision del usuario: incluye panela pero domina la caña de azucar industrial; no se separa al comparar por cultivo
+Fique,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Iraca,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Otros cultivos tropicales tradicionales,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Tabaco,Cultivos tropicales tradicionales,Cultivos tropicales tradicionales,no,"Bebida estimulante, fibra, industria o uso no alimentario"
+Otros frutales,Frutales,Demás frutales,no,Categoría residual: no es un cultivo definido y su composición puede cambiar entre años
+Otras hortalizas,Hortalizas,Hortalizas,no,Categoría residual: no es un cultivo definido y su composición puede cambiar entre años
+Ajonjolí,Oleaginosas,Oleaginosas,no,Se procesa para aceite o alimento animal; la palma de aceite domina el grupo
+Olivo,Oleaginosas,Oleaginosas,no,Se procesa para aceite o alimento animal; la palma de aceite domina el grupo
+Palma de aceite,Oleaginosas,Oleaginosas,no,Se procesa para aceite o alimento animal; la palma de aceite domina el grupo
+Sacha inchi,Oleaginosas,Oleaginosas,no,Se procesa para aceite o alimento animal; la palma de aceite domina el grupo
+Soya,Oleaginosas,Oleaginosas,no,Se procesa para aceite o alimento animal; la palma de aceite domina el grupo
+Cúrcuma o azafrán,Raíces y tubérculos,Raíces y tubérculos,no,"Especia o colorante, no alimento básico"
+Otras raíces y tubérculos,Raíces y tubérculos,Raíces y tubérculos,no,Categoría residual: no es un cultivo definido y su composición puede cambiar entre años
