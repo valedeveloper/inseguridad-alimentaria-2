@@ -128,19 +128,32 @@ def congelar_archivo(lote, fuente, origen, nombre=None):
     return registrar_archivo(lote, fuente, destino, origen=str(origen))
 
 
-def verificar_integridad(lote, fuente):
-    """Comprueba que los archivos congelados de una fuente no cambiaron.
+def verificar_archivo(lote, fuente, relativa):
+    """Comprueba un solo archivo del lote contra su sha256 registrado.
 
-    Lanza ErrorDeterminista si un archivo falta o su sha256 no coincide.
+    Devuelve su ruta. Lanza ErrorDeterminista si no esta registrado, si falta
+    o si su contenido cambio despues de registrarse.
+    """
+    info = leer_manifiesto(lote, fuente)['archivos'].get(relativa)
+    if info is None:
+        raise ErrorDeterminista(f'El archivo {fuente}/{relativa} no esta registrado en el lote.')
+    ruta = Path(lote) / fuente / relativa
+    if not ruta.exists():
+        raise ErrorDeterminista(f'Falta el archivo congelado {fuente}/{relativa}.')
+    if sha256_archivo(ruta) != info['sha256']:
+        raise ErrorDeterminista(f'El archivo congelado {fuente}/{relativa} cambio despues de extraerse.')
+    return ruta
+
+
+def verificar_integridad(lote, fuente):
+    """Comprueba que todos los archivos de una fuente no cambiaron.
+
+    Lanza ErrorDeterminista si alguno falta o su sha256 no coincide.
     Devuelve la lista de rutas relativas verificadas.
     """
     manifiesto = leer_manifiesto(lote, fuente)
     if not manifiesto['archivos']:
         raise ErrorDeterminista(f'El lote no tiene archivos congelados de {fuente}.')
-    for relativa, info in manifiesto['archivos'].items():
-        ruta = Path(lote) / fuente / relativa
-        if not ruta.exists():
-            raise ErrorDeterminista(f'Falta el archivo congelado {fuente}/{relativa}.')
-        if sha256_archivo(ruta) != info['sha256']:
-            raise ErrorDeterminista(f'El archivo congelado {fuente}/{relativa} cambio despues de extraerse.')
+    for relativa in manifiesto['archivos']:
+        verificar_archivo(lote, fuente, relativa)
     return sorted(manifiesto['archivos'])
