@@ -8,3 +8,5 @@ data/incoming/*
 !data/incoming/.gitkeep
 data/batches/*
 !data/batches/.gitkeep
+data/raw/ecv/*
+!data/raw/ecv/.gitkeep
