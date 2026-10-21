@@ -167,7 +167,7 @@ def validar_eva_cruda(lote):
         expectativas += [
             regla('C6', CRITICA, f'{campo} sin nulos', E.ExpectColumnValuesToNotBeNull, column=campo),
             regla('C6', CRITICA, f'{campo} numerico y >= 0 (formato con punto decimal)',
-                  E.ExpectColumnValuesToMatchRegex, column=campo, regex=r'^\d+(\.\d+)?$'),
+                  E.ExpectColumnValuesToMatchRegex, column=campo, regex=r'^\d+(?:\.\d+)?$'),
         ]
     resultados = validar('eva_registros', df, expectativas)
 
