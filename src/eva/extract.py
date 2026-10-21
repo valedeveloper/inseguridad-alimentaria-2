@@ -21,6 +21,7 @@ La conciliacion extraidos vs. count(*) (regla C3) y el resto de reglas de la
 fuente se evaluan en la compuerta de calidad, no aqui.
 """
 import json
+import logging
 import time
 from pathlib import Path
 
@@ -37,6 +38,7 @@ TIMEOUT_S = 60
 ESPERAS_REINTENTO_S = (2, 4, 8)
 CODIGOS_TRANSITORIOS = {429, 500, 502, 503, 504}
 NOMBRE_CRUDO = 'eva_2024_2025.json'
+log = logging.getLogger(__name__)
 
 
 def _consultar(params, dormir=time.sleep):
@@ -49,9 +51,11 @@ def _consultar(params, dormir=time.sleep):
             respuesta = requests.get(URL_API, params=params, timeout=TIMEOUT_S)
         except (requests.ConnectionError, requests.Timeout) as error:
             ultimo_error = f'{type(error).__name__}: {error}'
+            log.warning('Intento %s a la API fallo (%s); se reintentara', intento + 1, ultimo_error)
             continue
         if respuesta.status_code in CODIGOS_TRANSITORIOS:
             ultimo_error = f'HTTP {respuesta.status_code}'
+            log.warning('Intento %s a la API fallo (%s); se reintentara', intento + 1, ultimo_error)
             continue
         if respuesta.status_code != 200:
             raise ErrorDeterminista(
@@ -94,9 +98,16 @@ def descargar_anio(anio, dormir=time.sleep):
         offset += TAM_PAGINA
 
 
-def extraer_eva(lote, dormir=time.sleep):
-    """Extrae EVA 2024-2025 y la congela en el lote. Devuelve la ruta del lote."""
+def extraer_eva(lote, falla_controlada=False, dormir=time.sleep):
+    """Extrae EVA 2024-2025 y la congela en el lote. Devuelve la ruta del lote.
+
+    falla_controlada=True activa el test B: duplica un registro como si la
+    fuente lo hubiera entregado dos veces (el conteo de la API tambien lo
+    incluye). La compuerta 2 debe detener el pipeline por la regla C7. Queda
+    anotado en el contenido y en el manifiesto.
+    """
     if lotes.archivo_congelado(lote, FUENTE, NOMBRE_CRUDO) is not None:
+        log.info('[eva] La extraccion ya estaba congelada en el lote; no se vuelve a llamar a la API')
         return lote
     fecha = lotes.ahora_utc()
     conteos_api, extraidos, paginas, registros = {}, {}, {}, []
@@ -106,6 +117,15 @@ def extraer_eva(lote, dormir=time.sleep):
         extraidos[str(anio)] = len(datos)
         paginas[str(anio)] = n_paginas
         registros.extend(datos)
+        log.info('[eva] %s: %s registros en %s paginas (count(*) de la API: %s)',
+                 anio, f'{len(datos):,}', n_paginas, f'{conteos_api[str(anio)]:,}')
+    if falla_controlada:
+        duplicado = dict(registros[0])
+        registros.append(duplicado)
+        conteos_api[duplicado['a_o']] += 1
+        extraidos[duplicado['a_o']] += 1
+        log.warning('[eva] FALLA CONTROLADA (test B): se duplico el registro municipio=%s codigo=%s periodo=%s',
+                    duplicado.get('c_digo_dane_municipio'), duplicado.get('c_digo_del_cultivo'), duplicado.get('periodo'))
     contenido = {
         'fuente': 'EVA - UPRA (datos.gov.co, uejq-wxrr)',
         'url': URL_API,
@@ -114,6 +134,7 @@ def extraer_eva(lote, dormir=time.sleep):
         'conteo_api': conteos_api,
         'registros_extraidos': extraidos,
         'paginas': paginas,
+        'falla_controlada': 'registro_duplicado' if falla_controlada else None,
         'registros': registros,
     }
     ruta = Path(lote) / FUENTE / 'raw' / NOMBRE_CRUDO
@@ -121,7 +142,9 @@ def extraer_eva(lote, dormir=time.sleep):
     lotes.registrar_archivo(
         lote, FUENTE, ruta,
         fecha_extraccion_utc=fecha, conteo_api=conteos_api, registros_extraidos=extraidos,
+        falla_controlada='registro_duplicado' if falla_controlada else None,
     )
+    log.info('[eva] Extraccion congelada: %s registros, fecha %s', f'{len(registros):,}', fecha)
     return lote
 
 

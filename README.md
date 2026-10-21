@@ -25,29 +25,29 @@
 
 ## 3. Estado y cambios de R1–R5
 
-Se conserva el alcance de R1–R5. Su implementación analítica específica está pendiente en este repositorio.
+Se conserva el alcance de R1–R5. Su extracción, limpieza, transformación y modelo dimensional están portados a este repositorio (`src/ecv/`) y producen los mismos resultados que la primera entrega (87.060 hogares; prevalencia nacional 21,10 %). Falta traer las consultas analíticas al warehouse.
 
 | ID | Requerimiento | Estado actual | Trabajo pendiente |
 |---|---|---|---|
-| R1 | Caracterizar la distribución territorial de la inseguridad alimentaria. | Conservado. | Incorporar códigos territoriales, cruces geográficos y prevalencias por departamento y región. |
-| R2 | Analizar la asociación entre servicios públicos básicos y vulnerabilidad alimentaria. | Conservado. | Integrar servicios de la vivienda y calcular indicadores por acceso a servicios. |
-| R3 | Analizar la relación entre choques económicos recientes e inseguridad alimentaria. | Conservado. | Codificar choques y calcular indicadores por hogar y grupo. |
-| R4 | Caracterizar las estrategias de afrontamiento según la severidad de la inseguridad alimentaria. | Conservado. | Integrar estrategias, clasificar severidad y elaborar consultas. |
-| R5 | Evaluar la vulnerabilidad alimentaria según el ingreso del hogar. | Conservado. | Tratar inconsistencias, construir quintiles y calcular indicadores ponderados. |
+| R1 | Caracterizar la distribución territorial de la inseguridad alimentaria. | Conservado; modelo implementado. | Consulta analítica por departamento y región en el warehouse. |
+| R2 | Analizar la asociación entre servicios públicos básicos y vulnerabilidad alimentaria. | Conservado; modelo implementado. | Consulta analítica por acceso a servicios en el warehouse. |
+| R3 | Analizar la relación entre choques económicos recientes e inseguridad alimentaria. | Conservado; modelo implementado. | Consulta analítica por número de choques en el warehouse. |
+| R4 | Caracterizar las estrategias de afrontamiento según la severidad de la inseguridad alimentaria. | Conservado; modelo implementado. | Consulta analítica por severidad y estrategias en el warehouse. |
+| R5 | Evaluar la vulnerabilidad alimentaria según el ingreso del hogar. | Conservado; modelo implementado. | Consulta analítica por quintil de ingreso en el warehouse. |
 
 ### Avances comunes del proceso de datos
 
 | Componente | Implementación actual |
 |---|---|
-| Entorno | Docker, Airflow, Celery, Redis y PostgreSQL; metadatos y almacén separados. |
-| Extracción | Copia de CSV por ejecución y registro de integridad. |
-| Validación inicial | Revisión de cabeceras, filas, columnas obligatorias y esquemas. |
-| Transformación | Normalización de columnas, limpieza de espacios, conversión numérica y eliminación configurable de duplicados. |
-| Validación posterior | Revisión de conteos, nulos, claves y rangos configurados. |
-| Carga | Inserción o actualización en PostgreSQL mediante una transacción. |
-| Pendiente | Integración específica de las tablas ECV, reglas de negocio, modelo estrella y consultas R1–R5. |
+| Entorno | Docker, Airflow 3.1.8 con LocalExecutor y PostgreSQL; metadatos y almacén separados. |
+| Extracción | ECV: copia de los CSV a un lote por ejecución con su sha256. EVA: API de datos.gov.co paginada, conciliada contra el conteo oficial y guardada con su fecha de extracción. |
+| Validación inicial | Great Expectations sobre cada fuente cruda (compuertas 1 y 2). |
+| Transformación | ECV: módulos de la primera entrega. EVA: agregación a departamento × cultivo × año y canasta de cultivos. |
+| Validación posterior | Great Expectations sobre los datos preparados (compuerta 3) antes de cargar. |
+| Carga | Modelo dimensional completo (11 tablas) con `TRUNCATE` + `INSERT` en una sola transacción. |
+| Pendiente | Consultas analíticas R1–R7, DAG final y evidencia de ejecución. |
 
-La implementación está en [el DAG principal](dags/etl_dag.py), [la lógica del proceso](src/pipeline.py) y [las reglas de validación](config/pipeline.json). Actualmente admite CSV con esquema homogéneo y carga genérica; todavía no reproduce el modelo de la primera entrega.
+La lógica está en `src/` (`ecv/`, `eva/`, `calidad/`, `comun/` y `carga.py`), las reglas de calidad en [docs/reglas_calidad.md](docs/reglas_calidad.md) y el modelo en [docs/modelo_dimensional.dbml](docs/modelo_dimensional.dbml) y [sql/create_tables.sql](sql/create_tables.sql). El DAG ([dags/etl_dag.py](dags/etl_dag.py)) se está actualizando para orquestar estas etapas.
 
 ## 4. Nuevos requerimientos integrados: R6 y R7
 
@@ -55,15 +55,15 @@ La implementación está en [el DAG principal](dags/etl_dag.py), [la lógica del
 
 | Elemento | Definición |
 |---|---|
-| Fuente de hogares | ECV 2025: departamento, medida FIES y factor de expansión. Confirmar nombres de variables en el diccionario. |
+| Fuente de hogares | ECV 2025: departamento (`P1_DEPARTAMENTO`), probabilidad FIES de inseguridad moderada o grave (`PROB_IAMG`) y factor de expansión del hogar (`FEX_C`). |
 | Fuente agrícola | [Evaluaciones Agropecuarias Municipales (EVA) de la UPRA](https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Evaluaciones-Agropecuarias-Municipales-EVA-2019-20/uejq-wxrr/about_data). |
 | Datos agrícolas comunes | Código departamental, año, cultivo y producción; R6 añade departamento y grupo de cultivo; R7, período, área cosechada y ciclo. |
-| Campos previstos de la fuente agrícola | `c_digo_dane_departamento`, `departamento`, `a_o`, `cultivo`, `grupo_cultivo`, `producci_n`, `periodo`, `rea_cosechada`, `ciclo_del_cultivo`. |
-| Llave de integración | Código DIVIPOLA departamental de dos dígitos y año de referencia. |
+| Campos utilizados de la fuente agrícola | `c_digo_dane_departamento`, `departamento`, `c_digo_dane_municipio`, `a_o`, `periodo`, `cultivo`, `grupo_cultivo`, `subgrupo`, `ciclo_del_cultivo`, `estado_f_sico_del_cultivo`, `rea_sembrada`, `rea_cosechada`, `producci_n`. La extracción conserva los 18 campos de la API. |
+| Llave de integración | Código DIVIPOLA departamental de dos dígitos. La ECV es de 2025, así que el año no es llave: R6 usa EVA 2025 y R7 compara 2024 con 2025. Bogotá no tiene datos en EVA y queda "sin dato", nunca 0. |
 | Preparación | Consolidar registros municipales y períodos por departamento, cultivo y año, sin duplicarlos. |
-| Selección de cultivos | Lista explícita de cultivos para alimentación humana, compartida por R6 y R7. |
+| Selección de cultivos | Canasta fija anclada en la lista oficial de alimentos de la ECV 2025 (pregunta P3204): 139 de 160 cultivos, en [config/canasta_cultivos.csv](config/canasta_cultivos.csv) con el motivo de cada uno. |
 | Trazabilidad | Conservar fecha de extracción, datos descargados, exclusiones y revisiones; verificar campos, unidades y cobertura. |
-| Estado | Requerimientos definidos; extracción agrícola, integración, indicadores y gráficos pendientes. |
+| Estado | Extracción agrícola, integración e indicadores implementados; dashboard pendiente. |
 
 ### R6. Diversificación agrícola e inseguridad alimentaria
 
@@ -97,8 +97,8 @@ La implementación está en [el DAG principal](dags/etl_dag.py), [la lógica del
 
 | Indicador o regla | Definición |
 |---|---|
-| Prevalencia FIES departamental | `100 × Σ(peso del hogar × indicador FIES) / Σ(peso del hogar)`, sobre hogares con clasificación válida. El indicador vale 1 para inseguridad moderada o grave y 0 en otro caso. |
-| Medida FIES | Confirmar si la fuente utiliza clasificación o probabilidades y documentar el cálculo correspondiente antes de implementarlo. |
+| Prevalencia FIES departamental | `Σ(FEX_C × PROB_IAMG) / Σ(FEX_C)` sobre hogares con FIES válido (se excluyen 718 hogares sin dato). `PROB_IAMG` ya está en escala 0–100. Reproduce el 21,1 % nacional publicado por el DANE. |
+| Medida FIES | La ECV entrega probabilidades (`PROB_IAMG`, `PROB_IAG`), no una clasificación; se usan como en la primera entrega. |
 | Variación por cultivo | `100 × (producción 2025 / producción 2024 − 1)`, con base 2024 positiva y datos comparables. |
 | Cultivos en descenso | `100 × cultivos comparables con variación negativa / total de cultivos comparables`. |
 | Valores no calculables | Marcar denominadores cero, ausencia de cultivos comparables, faltantes y bases inválidas; no asignar automáticamente cero ni registrar una caída. |
@@ -108,9 +108,9 @@ La implementación está en [el DAG principal](dags/etl_dag.py), [la lógica del
 
 ### Despliegue del entorno
 
-Desde la raíz del proyecto, en un terminal PowerShell:
+Desde la raíz del proyecto, en una terminal: crear `.env` a partir de `.env.example` y colocar los CSV de la ECV en `data/raw/ecv/` (ver [data/raw/README.md](data/raw/README.md)). Luego:
 
-```powershell
+```bash
 docker compose config --quiet
 docker compose up -d --build
 ```

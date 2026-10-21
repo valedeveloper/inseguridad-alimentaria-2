@@ -9,12 +9,15 @@ decimales, nulos), que un CSV perderia.
 Cada archivo queda registrado en el manifiesto de su fuente con su sha256 y su
 numero de filas, y se verifica al leerlo.
 """
+import logging
 import os
 from pathlib import Path
 
 import pandas as pd
 
 from src.comun import lotes
+
+log = logging.getLogger(__name__)
 
 
 def _relativa(nombre):
@@ -29,6 +32,7 @@ def guardar_parquet(df, lote, fuente, nombre):
     df.to_parquet(temporal, index=False)
     temporal.replace(ruta)
     lotes.registrar_archivo(lote, fuente, ruta, filas=int(len(df)), columnas=int(df.shape[1]))
+    log.info('[%s] %s: %s filas x %s columnas', fuente, nombre, f'{len(df):,}', df.shape[1])
     return str(ruta)
 
 

@@ -24,8 +24,8 @@ FUENTE_INTEGRADO = 'integrado'
 TABLA_AGREGADA = 'produccion_agregada'
 
 
-def extraer_eva(lote):
-    return extract.extraer_eva(lote)
+def extraer_eva(lote, falla_controlada=False):
+    return extract.extraer_eva(lote, falla_controlada=falla_controlada)
 
 
 def transformar_eva(lote):

@@ -15,6 +15,7 @@ Las reglas que no son de una sola columna se expresan con columnas derivadas
 (por ejemplo "sin dato coincide con probabilidad nula") o con una tabla de una
 fila con metricas de conciliacion, validadas con expectativas estandar de GX.
 """
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -34,6 +35,7 @@ from src.eva.extract import leer_eva
 from src.eva.transform import cargar_canasta
 
 E = gx.expectations
+log = logging.getLogger(__name__)
 CAMPOS_EVA = [
     'c_digo_dane_departamento', 'departamento', 'c_digo_dane_municipio', 'municipio',
     'grupo_cultivo', 'subgrupo', 'cultivo', 'desagregaci_n_cultivo', 'a_o', 'periodo',
@@ -71,6 +73,16 @@ def _cerrar_compuerta(lote, numero, nombre, resultados, metricas=None):
     ruta = Path(lote) / 'calidad' / f'compuerta_{numero}.json'
     lotes.escribir_json(ruta, reporte)
     lotes.registrar_archivo(lote, 'calidad', ruta, estado=estado)
+    log.info('Compuerta %s (%s): %s | %s expectativas | reglas %s', numero, nombre, estado.upper(),
+             len(resultados), reporte['reglas_evaluadas'])
+    for clave, valor in (metricas or {}).items():
+        log.info('   metrica %s = %s', clave, valor)
+    for r in advertencias:
+        log.warning('   ADVERTENCIA %s: %s (inesperados: %s)', r['regla'], r['descripcion'], r['inesperados'])
+    for r in criticas:
+        log.error('   CRITICA %s: %s (inesperados: %s, ejemplos: %s)', r['regla'], r['descripcion'],
+                  r['inesperados'], r['ejemplos'])
+    log.info('   Reporte: %s', ruta)
     if criticas:
         raise ErrorCalidadCritica(
             f'Compuerta {numero} ({nombre}) rechazada. Reglas criticas incumplidas: '

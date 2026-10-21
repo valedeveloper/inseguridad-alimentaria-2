@@ -22,6 +22,7 @@ la fuente original haya cambiado entre intentos.
 """
 import hashlib
 import json
+import logging
 import os
 import shutil
 from datetime import datetime, timezone
@@ -31,6 +32,7 @@ from src.comun.config import dir_lotes
 from src.comun.errores import ErrorDeterminista
 
 MANIFIESTO = 'manifiesto.json'
+log = logging.getLogger(__name__)
 
 
 def ahora_utc():
@@ -68,6 +70,9 @@ def crear_lote(run_id):
     lote.mkdir(parents=True, exist_ok=True)
     if not (lote / 'lote.json').exists():
         escribir_json(lote / 'lote.json', {'run_id': run_id, 'creado_utc': ahora_utc()})
+        log.info('Lote %s creado para run_id=%s en %s', lote.name, run_id, lote)
+    else:
+        log.info('Lote %s reutilizado para run_id=%s', lote.name, run_id)
     return str(lote)
 
 
@@ -117,6 +122,7 @@ def congelar_archivo(lote, fuente, origen, nombre=None):
     nombre = nombre or origen.name
     existente = archivo_congelado(lote, fuente, nombre)
     if existente is not None:
+        log.info('[%s] %s ya estaba congelado en el lote; se reutiliza la copia', fuente, nombre)
         return str(existente)
     if not origen.is_file():
         raise ErrorDeterminista(f'No existe el archivo de origen: {origen}')
@@ -125,7 +131,10 @@ def congelar_archivo(lote, fuente, origen, nombre=None):
     temporal = destino.with_name(f'.{destino.name}.{os.getpid()}.tmp')
     shutil.copyfile(origen, temporal)
     temporal.replace(destino)
-    return registrar_archivo(lote, fuente, destino, origen=str(origen))
+    ruta = registrar_archivo(lote, fuente, destino, origen=str(origen))
+    info = leer_manifiesto(lote, fuente)['archivos'][f'raw/{nombre}']
+    log.info('[%s] Congelado %s (%s bytes, sha256 %s...)', fuente, nombre, info['bytes'], info['sha256'][:12])
+    return ruta
 
 
 def verificar_archivo(lote, fuente, relativa):
@@ -156,4 +165,5 @@ def verificar_integridad(lote, fuente):
         raise ErrorDeterminista(f'El lote no tiene archivos congelados de {fuente}.')
     for relativa in manifiesto['archivos']:
         verificar_archivo(lote, fuente, relativa)
+    log.info('[%s] Integridad verificada: %s archivos sin cambios', fuente, len(manifiesto['archivos']))
     return sorted(manifiesto['archivos'])

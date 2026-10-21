@@ -18,6 +18,7 @@ deja exactamente los mismos datos, sin duplicados.
 Errores: no poder conectarse a la base es transitorio (se puede reintentar);
 cualquier otro error de base de datos o de conciliacion es determinista.
 """
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -32,6 +33,7 @@ from src.comun.errores import ErrorDeterminista, ErrorTransitorio
 
 NOMBRE_DDL = 'create_tables.sql'
 ESTADOS_QUE_PERMITEN_CARGAR = ('aprobada', 'aprobada_con_advertencias')
+log = logging.getLogger(__name__)
 
 # (fuente en el lote, tabla). Orden de insercion: dimensiones antes que hechos.
 TABLAS = [
@@ -92,6 +94,7 @@ def cargar(lote):
                             f'Conciliacion fallida en {tabla}: {en_base} filas en la base, '
                             f'{len(tablas[tabla])} en el lote.')
                     conteos[tabla] = en_base
+                    log.info('Cargada %s: %s filas (conciliado con el lote)', tabla, f'{en_base:,}')
     except psycopg2.Error as error:
         raise ErrorDeterminista(f'Error de base de datos durante la carga (revertida): {error}') from error
     finally:
@@ -106,4 +109,6 @@ def cargar(lote):
         'total_filas': sum(conteos.values()),
     })
     lotes.registrar_archivo(lote, 'carga', ruta)
+    log.info('Carga completa: %s filas en %s tablas (compuerta 3: %s)', f'{sum(conteos.values()):,}',
+             len(conteos), estado_compuerta)
     return lote

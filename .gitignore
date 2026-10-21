@@ -4,8 +4,6 @@ __pycache__/
 .venv/
 logs/*
 plugins/*
-data/incoming/*
-!data/incoming/.gitkeep
 data/batches/*
 !data/batches/.gitkeep
 data/raw/ecv/*
