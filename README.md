@@ -1,116 +1,495 @@
 # Factores socioeconómicos asociados a la inseguridad alimentaria en los hogares colombianos
 
+Proyecto académico de integración de la ECV 2025 del DANE y las Evaluaciones Agropecuarias Municipales (EVA) de la UPRA.
+
+**Revisión: 21 de octubre de 2026.** «Implementado» indica código existente; «validado» exige evidencia de ejecución. El perfilamiento conserva resultados; las corridas integrales todavía requieren evidencias. [Diagnóstico y verificación documental](docs/revision_readme.md).
+
 ## 1. Problema y objetivo analítico
 
 | Elemento | Descripción |
 |---|---|
 | Problema | Diferencias territoriales y socioeconómicas en la inseguridad alimentaria de los hogares colombianos. |
-| Pregunta central | ¿Cómo se relaciona la inseguridad alimentaria con el territorio, los servicios públicos, los choques económicos, el afrontamiento, el ingreso y la producción agrícola? |
-| Objetivo | Analizar estas asociaciones integrando información de los hogares y del contexto agrícola departamental. |
-| Fuente principal | Encuesta Nacional de Calidad de Vida (ECV) 2025 del DANE. |
-| Unidad de análisis | Hogar, identificado por `DIRECTORIO` y `ORDEN`; contexto agrícola agregado por departamento. |
-| Alcance | Análisis descriptivo de asociaciones, sin establecer causalidad. |
+| Pregunta | ¿Qué factores socioeconómicos, territoriales y de condiciones de vida están asociados con una mayor prevalencia de inseguridad alimentaria? |
+| Objetivo general | Integrar y preparar información de hogares y producción agrícola para estudiar esas asociaciones. |
+| Objetivos específicos | Caracterizar territorio, servicios, choques, afrontamiento e ingreso (R1–R5); relacionar diversidad y variación agrícola con la prevalencia departamental (R6–R7). |
+| Unidad de análisis | Hogar para R1–R5; departamento para la integración R6–R7. |
+| Alcance | Análisis descriptivo; no demuestra causalidad ni consumo de alimentos producidos localmente. |
 
 ## 2. Línea base de la primera entrega y repositorio
 
-**Repositorio:** [Primera entrega — rama de desarrollo](https://github.com/Sxg0673/etl-inseguridad-alimentaria-colombia/tree/dev).
+**Repositorio:** [Primera entrega, rama `dev`](https://github.com/Sxg0673/etl-inseguridad-alimentaria-colombia/tree/dev).
 
-| Componente | Línea base documentada |
-|---|---|
-| Requerimientos | R1–R5: territorio, servicios, choques, afrontamiento e ingreso. |
-| Datos | Información de vivienda, servicios y condiciones de vida de la ECV 2025. |
-| Preparación | Perfilamiento, decisiones de limpieza y reglas de integración por vivienda y hogar. |
-| Modelo | Hecho por hogar y dimensiones de geografía, ingreso, severidad, choques y afrontamiento. |
-| Continuidad en esta entrega | Orquestación con Docker y Airflow, controles de calidad y definición de R6–R7 con datos agrícolas. |
+| Aspecto | Línea base documentada | Evolución comprobable |
+|---|---|---|
+| Alcance | R1–R5 sobre ECV 2025. | R6–R7 y extracción agrícola. |
+| Preparación | Limpieza, transformación y modelo de hogares descritos en la documentación previa. | [Módulos ECV](src/ecv) integrados al DAG. |
+| Modelo | Cinco dimensiones y un hecho por hogar. | Dos dimensiones agrícolas y tres hechos adicionales; 11 tablas. |
+| Ejecución y calidad | Referencia metodológica previa. | Lotes verificables, tres compuertas GX y carga transaccional. |
+
+La rama `dev` es mutable: falta fijar el commit de la primera entrega para certificar equivalencia exacta. La evolución local se observa en `57434a6` (DAG), `10cd0c6` (vistas) y `7688577` (pruebas y guías).
 
 ## 3. Estado y cambios de R1–R5
 
-Se conserva el alcance de R1–R5. Su extracción, limpieza, transformación y modelo dimensional están portados a este repositorio (`src/ecv/`) y producen los mismos resultados que la primera entrega (87.060 hogares; prevalencia nacional 21,10 %). Sus consultas analíticas están en el warehouse como vistas ([sql/vistas_analiticas.sql](sql/vistas_analiticas.sql)) y reproducen exactamente los resultados de la primera entrega.
+| Requisito | Descripción | Implementación | Archivos relacionados | Evidencia | Estado |
+|---|---|---|---|---|---|
+| R1 | Distribución territorial de la inseguridad alimentaria. | Geografía y prevalencias ponderadas. | [Transformación](src/ecv/transform.py), [vistas](sql/vistas_analiticas.sql). | `vw_r1_distribucion_territorial`; perfil ECV. | Implementado; falta evidencia integral. |
+| R2 | Asociación entre servicios públicos y vulnerabilidad alimentaria. | Acueducto y alcantarillado en el hecho. | [Modelo ECV](src/ecv/dimensional_model.py), [vistas](sql/vistas_analiticas.sql). | `vw_r2_servicios_publicos`. | Implementado; resultados por verificar. |
+| R3 | Relación entre choques económicos e inseguridad alimentaria. | Once banderas y conteo. | [Transformación](src/ecv/transform.py), [modelo](src/ecv/dimensional_model.py). | `vw_r3_choques_economicos`; C13. | Implementado; resultados por verificar. |
+| R4 | Afrontamiento según severidad alimentaria. | Catorce banderas, conteo y severidad. | [Transformación](src/ecv/transform.py), [vistas](sql/vistas_analiticas.sql). | `vw_r4_estrategias_severidad`; C12–C13. | Implementado; resultados por verificar. |
+| R5 | Vulnerabilidad según ingreso del hogar. | Quintiles ponderados y categoría inconsistente. | [Limpieza](src/ecv/clean.py), [transformación](src/ecv/transform.py). | `vw_r5_quintiles_ingreso`. | Implementado; resultados por verificar. |
 
-| ID | Requerimiento | Estado actual | Trabajo pendiente |
-|---|---|---|---|
-| R1 | Caracterizar la distribución territorial de la inseguridad alimentaria. | Implementado. | Vista `vw_r1_distribucion_territorial`; falta el dashboard. |
-| R2 | Analizar la asociación entre servicios públicos básicos y vulnerabilidad alimentaria. | Implementado. | Vista `vw_r2_servicios_publicos`; falta el dashboard. |
-| R3 | Analizar la relación entre choques económicos recientes e inseguridad alimentaria. | Implementado. | Vista `vw_r3_choques_economicos`; falta el dashboard. |
-| R4 | Caracterizar las estrategias de afrontamiento según la severidad de la inseguridad alimentaria. | Implementado. | Vista `vw_r4_estrategias_severidad`; falta el dashboard. |
-| R5 | Evaluar la vulnerabilidad alimentaria según el ingreso del hogar. | Implementado. | Vista `vw_r5_quintiles_ingreso`; falta el dashboard. |
+El cambio común es la ejecución por lotes y compuertas. La afirmación de las guías sobre resultados «idénticos» a la primera entrega no se considera demostrada sin una comparación conservada.
 
-### Avances comunes del proceso de datos
+## 4. Nuevos requerimientos integrados R6 y R7
 
-| Componente | Implementación actual |
-|---|---|
-| Entorno | Docker, Airflow 3.1.8 con LocalExecutor y PostgreSQL; metadatos y almacén separados. |
-| Extracción | ECV: copia de los CSV a un lote por ejecución con su sha256. EVA: API de datos.gov.co paginada, conciliada contra el conteo oficial y guardada con su fecha de extracción. |
-| Validación inicial | Great Expectations sobre cada fuente cruda (compuertas 1 y 2). |
-| Transformación | ECV: módulos de la primera entrega. EVA: agregación a departamento × cultivo × año y canasta de cultivos. |
-| Validación posterior | Great Expectations sobre los datos preparados (compuerta 3) antes de cargar. |
-| Carga | Modelo dimensional completo (11 tablas) con `TRUNCATE` + `INSERT` en una sola transacción. |
-| Pendiente | Dashboard y evidencia de ejecución en Airflow (tests A, B y C). |
+| Requisito | Pregunta y propósito | Componente e integración | Aceptación | Estado |
+|---|---|---|---|---|
+| R6 | ¿Cómo se relaciona la diversidad alimentaria agrícola de 2025 con la prevalencia FIES departamental? | Cuenta cultivos con producción positiva y cruza ECV/EVA por departamento; amplía R1. | Una fila por departamento con diversidad y prevalencia; Bogotá sin dato agrícola, no cero; gráfico de dispersión. | Cálculo y vista implementados; gráfico y corrida documentada pendientes. |
+| R7 | ¿Los departamentos con caídas productivas entre 2024 y 2025 presentan mayor prevalencia FIES? | Compara una canasta fija y obtiene el porcentaje de cultivos en descenso. | Producciones, variación y comparabilidad por cultivo; porcentaje departamental; sin divisiones por cero; dispersión con FIES. | Cálculo y vistas implementados; gráfico y corrida documentada pendientes. |
 
-La lógica está en `src/` (`ecv/`, `eva/`, `calidad/`, `comun/` y `carga.py`), las reglas de calidad en [docs/reglas_calidad.md](docs/reglas_calidad.md) y el modelo en [docs/modelo_dimensional.dbml](docs/modelo_dimensional.dbml) y [sql/create_tables.sql](sql/create_tables.sql). El DAG ([dags/etl_dag.py](dags/etl_dag.py)) orquesta estas etapas; su diseño está en [docs/orquestacion.md](docs/orquestacion.md).
+Evidencia: [modelo agrícola](src/eva/dimensional_model.py), [pruebas sintéticas](tests/test_eva_modelo.py) y C14–C16. La integración agrega antes del cruce y no atribuye producción a hogares individuales.
 
-## 4. Nuevos requerimientos integrados: R6 y R7
+## 5. Fuente primaria y fuente mediante API
 
-### Fuentes e integración
+| Característica | ECV 2025 | EVA 2024–2025 |
+|---|---|---|
+| Responsable | DANE, DIMPE. | UPRA; publicación en Datos Abiertos Colombia. |
+| Fuente oficial | [Catálogo DANE 905](https://microdatos.dane.gov.co/index.php/catalog/905/get-microdata). | [Conjunto de datos EVA](https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Evaluaciones-Agropecuarias-Municipales-EVA-2019-20/uejq-wxrr/about_data). |
+| Acceso técnico | Descarga manual de tres CSV y copia local por corrida. | HTTP GET a [API Socrata](https://www.datos.gov.co/resource/uejq-wxrr.json); sin autenticación en el código. |
+| Formato | `;`, `utf-8-sig`, lectura como texto. | JSON; el perfil recibe los valores como texto. |
+| Granularidad | Vivienda y hogar. | Municipio × código de cultivo × período. |
+| Claves | `DIRECTORIO`, `ORDEN`; departamento `P1_DEPARTAMENTO`. | `c_digo_dane_departamento`, `c_digo_dane_municipio`, `c_digo_del_cultivo`, `periodo`. |
+| Variables | `FEX_C`, `PROB_IAMG`, `PROB_IAG`, ingreso, servicios, choques y estrategias. | `cultivo`, `a_o`, `periodo`, `producci_n`, áreas, rendimiento y atributos del cultivo. |
+| Consulta | [Archivos y descarga](data/raw/README.md). | `$where=a_o=2024` o `2025`; `$select=count(*)`; páginas de 5.000 con `$order=:id`, `$limit`, `$offset`. |
+| Limitación | CSV reales no distribuidos en Git. | Datos revisables; conservar fecha y respuesta. |
 
-| Elemento | Definición |
-|---|---|
-| Fuente de hogares | ECV 2025: departamento (`P1_DEPARTAMENTO`), probabilidad FIES de inseguridad moderada o grave (`PROB_IAMG`) y factor de expansión del hogar (`FEX_C`). |
-| Fuente agrícola | [Evaluaciones Agropecuarias Municipales (EVA) de la UPRA](https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Evaluaciones-Agropecuarias-Municipales-EVA-2019-20/uejq-wxrr/about_data). |
-| Datos agrícolas comunes | Código departamental, año, cultivo y producción; R6 añade departamento y grupo de cultivo; R7, período, área cosechada y ciclo. |
-| Campos utilizados de la fuente agrícola | `c_digo_dane_departamento`, `departamento`, `c_digo_dane_municipio`, `a_o`, `periodo`, `cultivo`, `grupo_cultivo`, `subgrupo`, `ciclo_del_cultivo`, `estado_f_sico_del_cultivo`, `rea_sembrada`, `rea_cosechada`, `producci_n`. La extracción conserva los 18 campos de la API. |
-| Llave de integración | Código DIVIPOLA departamental de dos dígitos. La ECV es de 2025, así que el año no es llave: R6 usa EVA 2025 y R7 compara 2024 con 2025. Bogotá no tiene datos en EVA y queda "sin dato", nunca 0. |
-| Preparación | Consolidar registros municipales y períodos por departamento, cultivo y año, sin duplicarlos. |
-| Selección de cultivos | Canasta fija anclada en la lista oficial de alimentos de la ECV 2025 (pregunta P3204): 139 de 160 cultivos, en [config/canasta_cultivos.csv](config/canasta_cultivos.csv) con el motivo de cada uno. |
-| Trazabilidad | Conservar fecha de extracción, datos descargados, exclusiones y revisiones; verificar campos, unidades y cobertura. |
-| Estado | Extracción agrícola, integración, indicadores y vistas (`vw_r6_diversidad_departamental`, `vw_r7_variacion_cultivo`, `vw_r7_descenso_departamental`) implementados; dashboard pendiente. |
+Implementación: [extractor ECV](src/ecv/extract.py) y [extractor EVA](src/eva/extract.py). DANE/UPRA son los orígenes institucionales; CSV y API son los mecanismos de acceso.
 
-### R6. Diversificación agrícola e inseguridad alimentaria
+## 6. Valor analítico aportado por la API
 
-| Elemento | Especificación |
-|---|---|
-| Pregunta | ¿Qué relación existe entre la diversidad de cultivos alimentarios de cada departamento en 2025 y la prevalencia de inseguridad alimentaria moderada o grave de sus hogares? |
-| Requerimiento | Integrar ECV 2025 y EVA mediante código DIVIPOLA y año para analizar la asociación entre diversidad agrícola e inseguridad alimentaria. |
-| Procesamiento | Filtrar EVA 2025, seleccionar cultivos alimentarios, consolidar producción y contar cultivos distintos con producción positiva; cruzar con la prevalencia FIES departamental. |
-| Indicador agrícola | Número de cultivos alimentarios distintos con producción positiva por departamento. |
-| Indicador alimentario | Prevalencia FIES ponderada por el factor de expansión del hogar. |
-| Resultado | Tabla por departamento con código DIVIPOLA, año, diversidad agrícola y prevalencia FIES. |
-| Visualización | Dispersión: diversidad agrícola en el eje horizontal y prevalencia FIES en el vertical. |
-| Aceptación | Una fila por departamento; no duplicar hogares; conservar faltantes agrícolas sin convertirlos en cero. |
-| Interpretación | Asociación descriptiva; no demuestra consumo local de los alimentos producidos ni causalidad. |
+| Aporte EVA | Complemento ECV | Análisis habilitado |
+|---|---|---|
+| Cultivos con producción positiva en 2025. | Prevalencia FIES departamental. | Diversidad agrícola frente a inseguridad alimentaria (R6). |
+| Producción por cultivo en 2024 y 2025. | Condición alimentaria de 2025. | Porcentaje de cultivos en descenso frente a prevalencia (R7). |
+| Código y cobertura territorial. | Departamento del hogar. | Comparación territorial con faltantes y baja cobertura explícitos. |
 
-### R7. Variación de la producción agrícola e inseguridad alimentaria
+La ECV sola no incorpora esos indicadores agrícolas. El cruce departamental no identifica qué produce o consume cada hogar; toneladas no equivalen a calorías.
 
-| Elemento | Especificación |
-|---|---|
-| Pregunta | ¿Los departamentos donde cayó la producción alimentaria entre 2024 y 2025 presentan mayor prevalencia de inseguridad alimentaria en la ECV 2025? |
-| Requerimiento | Comparar una canasta fija de cultivos alimentarios entre 2024 y 2025 y relacionar su variación con la prevalencia FIES departamental de 2025. |
-| Procesamiento | Consolidar producción por departamento, cultivo y año; comparar observaciones válidas de ambos años y calcular el porcentaje de cultivos en descenso. |
-| Indicador por cultivo | Variación porcentual de la producción entre 2024 y 2025. |
-| Indicador departamental | Porcentaje de cultivos comparables cuya producción disminuyó. |
-| Resultados | Tabla por departamento y cultivo con ambas producciones, variación y comparabilidad; tabla departamental con porcentaje en descenso, cultivos comparables y prevalencia FIES. |
-| Visualización | Dispersión: porcentaje de cultivos en descenso en el eje horizontal y prevalencia FIES en el vertical. |
-| Aceptación | Misma canasta de referencia; documentar exclusiones y revisiones; marcar bases cero y faltantes; evitar divisiones por cero y duplicación de hogares. |
-| Interpretación | Asociación descriptiva; una suma de toneladas no representa calorías ni suficiencia alimentaria. |
+## 7. Arquitectura del sistema
 
-### Cálculo y reglas de calidad
-
-| Indicador o regla | Definición |
-|---|---|
-| Prevalencia FIES departamental | `Σ(FEX_C × PROB_IAMG) / Σ(FEX_C)` sobre hogares con FIES válido (se excluyen 718 hogares sin dato). `PROB_IAMG` ya está en escala 0–100. Reproduce el 21,1 % nacional publicado por el DANE. |
-| Medida FIES | La ECV entrega probabilidades (`PROB_IAMG`, `PROB_IAG`), no una clasificación; se usan como en la primera entrega. |
-| Variación por cultivo | `100 × (producción 2025 / producción 2024 − 1)`, con base 2024 positiva y datos comparables. |
-| Cultivos en descenso | `100 × cultivos comparables con variación negativa / total de cultivos comparables`. |
-| Valores no calculables | Marcar denominadores cero, ausencia de cultivos comparables, faltantes y bases inválidas; no asignar automáticamente cero ni registrar una caída. |
-| Producción 2025 igual a cero | Representa una caída del 100 % únicamente si es un cero observado válido y la base 2024 es positiva. |
-| Integración | Comprobar unicidad departamental y conservar el número de hogares de la ECV. |
-| Relación con R1–R5 | R6 y R7 amplían el contexto territorial de R1; R2–R5 mantienen su alcance. Los indicadores agrícolas describen departamentos, no producción de cada hogar. |
-
-### Despliegue del entorno
-
-Desde la raíz del proyecto, en una terminal: crear `.env` a partir de `.env.example` y colocar los CSV de la ECV en `data/raw/ecv/` (ver [data/raw/README.md](data/raw/README.md)). Luego:
-
-```bash
-docker compose config --quiet
-docker compose up -d --build
+```mermaid
+flowchart LR
+    E[CSV ECV locales] --> RE[Copias y manifiesto ECV] --> V1[Compuerta 1]
+    A[API EVA] --> RA[JSON y manifiesto EVA] --> V2[Compuerta 2]
+    V1 --> T[Transformación y modelos]
+    V2 --> T
+    T --> I[Integración departamental] --> V3[Compuerta 3]
+    V3 --> C[Carga transaccional] --> DW[(PostgreSQL: 11 tablas)] --> SQL[8 vistas]
+    SQL -. previsto .-> D[Tablero pendiente]
+    AF[Airflow: LocalExecutor] -. coordina .-> RE
+    AF -. coordina .-> RA
+    AF -. coordina .-> T
+    AF -. coordina .-> C
 ```
+
+| Componente | Función y decisión |
+|---|---|
+| [Lotes](src/comun/lotes.py) | Aislar corridas y verificar integridad con SHA-256. |
+| [Artefactos](src/comun/artefactos.py) | Parquet conserva tipos/nulos; lectura verificada contra manifiesto. |
+| [Compuertas](src/calidad/compuertas.py) | Bloquear transformación/carga ante reglas críticas. |
+| [Compose](docker-compose.yaml) | Airflow 3.1.8 con LocalExecutor, PostgreSQL 16 y bases separadas para metadatos/analítica. La configuración actual no usa Celery ni Redis. |
+
+## 8. Hallazgos del perfilamiento
+
+Cifras de la extracción documentada el 20 de octubre de 2026, 23:37 UTC; no son una consulta actual. [Hallazgos completos](notebooks/hallazgos_perfilamiento.md), [notebook EVA](notebooks/01_profiling_eva.ipynb) y [notebook ECV](notebooks/02_profiling_ecv_departamental.ipynb): conservan salidas en 33 y 11 celdas de código.
+
+| Tema | Hallazgo documentado | Implicación |
+|---|---|---|
+| Volumen EVA | 25.553 registros de 2024 y 25.617 de 2025; total 51.170; diferencia con conteo API: cero. | Paginar y conciliar. |
+| Esquema EVA | 18 campos; texto; sin negativos ni formatos inválidos en las cuatro medidas. | Convertir explícitamente con punto decimal. |
+| Unicidad EVA | Sin duplicados exactos ni de municipio–código–período. | C7 evita doble suma. |
+| Identificadores | 1.102 códigos municipales y 1.020 nombres; 160 cultivos y 187 desagregaciones. | Integrar por código; contar cultivos, no desagregaciones. |
+| Dominios | 8 grupos, 2 ciclos, 10 estados físicos y 6 períodos. | Conservar atributos y revisar período/año. |
+| Marcadores | «No aplica» en nombre científico: 815 registros. | Campo ajeno a R6–R7. |
+| Coherencia agrícola | 6.950 casos de cosechada > sembrada; 1.412 de siembra cero con cosecha positiva. | No rechazar automáticamente: fuente admite cosechas de siembras previas. |
+| Atípicos | 2 rendimientos >10 veces la mediana; ninguno >20 veces. | Advertencia A2 con umbral 20. |
+| Cobertura | 32 departamentos EVA, sin Bogotá. | Conservar faltantes agrícolas. |
+| Períodos | 8 casos de «Plantas aromáticas» combinan anual y semestral. | Riesgo de doble suma; fuera de canasta. |
+| Repetición temporal | Producción idéntica: 5.923 de 23.071 pares (25,7 %); tres medidas idénticas: 19,0 %. | Variación cero no prueba estabilidad. |
+| Comparabilidad preliminar | 43 bases cero, 34 solo 2024 y 24 solo 2025, antes del filtro final de canasta. | Marcar casos no comparables. |
+| ECV | 87.060 hogares, 33 códigos departamentales; 6.365 códigos de un dígito. | Normalizar sin alterar grano. |
+| FIES | 718 hogares sin probabilidad válida; prevalencia documentada 21,10 % moderada o grave. | Excluir nulos del denominador. |
+| Ingreso | La limpieza documenta 3 inconsistencias de ingreso per cápita. | Categoría separada, sin borrar hogares. |
+
+Las 3.876 filas del perfil preliminar por **código** no corresponden al conteo definitivo por **cultivo**. Una corrida nueva debe volver a validar las fuentes.
+
+## 9. Riesgos y reglas de calidad
+
+[Catálogo y justificación](docs/reglas_calidad.md). Son 19 identificadores de regla: 16 críticos y 3 advertencias; cada uno puede agrupar varias expectativas.
+
+| ID | Riesgo y entidad | Regla de calidad | Severidad | Consecuencia |
+|---|---|---|---|---|
+| C1 | Hogares duplicados/no identificados. | `DIRECTORIO`, `ORDEN` únicos y no nulos. | Crítica | Detener. |
+| C2 | Departamento ECV sin correspondencia. | Código normalizado válido y no nulo. | Crítica | Detener. |
+| C3 | EVA incompleta. | Extraídos menos conteo API = 0 y disponible por año. | Crítica | Detener. |
+| C4 | Cambio de esquema EVA. | Presencia de 18 campos; admite adicionales. | Crítica | Detener. |
+| C5 | Año/período incorrecto. | Ambos años y períodos coherentes. | Crítica | Detener. |
+| C6 | Medidas EVA inválidas. | Cuatro medidas no nulas y numéricas no negativas. | Crítica | Detener. |
+| C7 | Doble suma EVA. | Municipio–código–período único. | Crítica | Detener. |
+| C8 | Territorio EVA inválido. | DIVIPOLA, municipio de cinco dígitos y prefijo coherente. | Crítica | Detener. |
+| C9 | Canasta alterada. | Cultivo clasificado como incluido o excluido. | Crítica | Detener. |
+| C10 | Pérdida/multiplicación de hogares. | Llaves únicas; filas del hecho = transformados. | Crítica | Detener. |
+| C11 | Prevalencia/integración errónea. | Nacional y recompuesta: 21,1 % ±0,1 puntos; suma de hogares conciliada. | Crítica | Detener. |
+| C12 | FIES faltante tratada como válida. | «Sin dato» equivale a probabilidad nula. | Crítica | Detener. |
+| C13 | Conteos incoherentes. | Suma de banderas; sin choque equivale a sin estrategia. | Crítica | Detener. |
+| C14 | Producción alterada. | Llave del agregado única; diferencia total <1 tonelada. | Crítica | Detener. |
+| C15 | Departamentos duplicados o imputados. | 33 filas únicas; faltantes agrícolas preservados. | Crítica | Detener. |
+| C16 | Falsa caída/división inválida. | Estados explícitos, nulos coherentes, variación finita ≥−100 %, descenso entre 0 y 100 %. | Crítica | Detener. |
+| A1 | Cobertura insuficiente. | Al menos 32 departamentos por año. | Advertencia | Continuar y registrar. |
+| A2 | Rendimiento extremo. | ≤20 veces la mediana del código. | Advertencia | Continuar y registrar. |
+| A3 | Pocos cultivos comparables. | Advertir si hay menos de 15. | Advertencia | Continuar y registrar. |
+
+A1 se describía como igualdad a 32, pero el código exige un **mínimo** de 32. C10 contrasta con transformados, no directamente con la fuente cruda.
+
+## 10. Diseño de Great Expectations y trazabilidad de reglas
+
+[GX común](src/calidad/gx_comun.py): versión **1.23.1**, contexto efímero, fuente pandas, activo de DataFrame completo, suite, definición de validación y punto de control con salida `SUMMARY`. No requiere suites persistentes en `gx/`.
+
+| Reglas | Expectativas implementadas | Datos/etapa | Requisitos | Evidencia |
+|---|---|---|---|---|
+| C1, C7 | `ExpectCompoundColumnsToBeUnique`; C1 añade `ExpectColumnValuesToNotBeNull`. | ECV y EVA crudas, compuertas 1–2. | R1–R7 | [Compuertas](src/calidad/compuertas.py). |
+| C2, C5, C8, C9 | `ExpectColumnValuesToBeInSet`, `ExpectColumnDistinctValuesToEqualSet`, `ExpectColumnValuesToMatchRegex`; no nulo en C2. | ECV/EVA crudas. | R1, R6–R7 | [Compuertas](src/calidad/compuertas.py). |
+| C3, C4, C6, A1–A2 | `ExpectColumnValuesToBeBetween`, `ExpectTableColumnsToMatchSet`, no nulos y expresión regular. | EVA cruda, compuerta 2. | R6–R7 | [Compuertas](src/calidad/compuertas.py). |
+| C10, C14, C15 | Unicidad, `ExpectTableRowCountToEqual`, intervalos. | Preparados, compuerta 3. | R1–R7 | [Compuertas](src/calidad/compuertas.py). |
+| C11–C13, C16, A3 | Intervalos y conjuntos sobre métricas/columnas derivadas. | Preparados, compuerta 3. | Según sección 9. | [Compuertas](src/calidad/compuertas.py). |
+
+Cada resultado registra regla, severidad, tabla, expectativa, éxito, métricas y ejemplos en `calidad/compuerta_N.json`. Estados: `aprobada`, `aprobada_con_advertencias` o `rechazada`. Una crítica lanza `ErrorCalidadCritica`; una advertencia no bloquea. Existe código de pruebas, pero no se localizaron reportes ejecutados de las compuertas.
+
+## 11. Validación cruda de ambas fuentes
+
+| Control | ECV: compuerta 1 | EVA: compuerta 2 |
+|---|---|---|
+| Estructura/tipos | Lectura textual de columnas necesarias; faltantes provocan error. No hay suite de esquema completo. | Exige 18 campos y formato de cuatro medidas numéricas. |
+| Identificadores | Hogar no nulo y único; departamento válido tras `zfill(2)`. | Llave natural única; departamento/municipio y prefijo válidos. |
+| Completitud | Claves del hogar y departamento; no todas las variables analíticas crudas. | Medidas sin nulos, ambos años y conciliación API. |
+| Dominios | DIVIPOLA departamental. | Años, períodos, códigos y catálogo de cultivos. |
+| Inválidos | Sin cuarentena ni descarte automático. | A1/A2 registran advertencias; sin cuarentena. |
+| Falla crítica | Bloquea las dos transformaciones. | Bloquea las dos transformaciones. |
+
+Separar las compuertas permite identificar la fuente del incumplimiento antes de integrar. Código: [compuertas](src/calidad/compuertas.py), [lectura ECV](src/ecv/extract.py) y [lectura EVA](src/eva/extract.py).
+
+## 12. Transformación y contrato de integración
+
+| Decisión | Implementación | Justificación |
+|---|---|---|
+| [Limpieza ECV](src/ecv/clean.py) | Retira 21 contenedoras, normaliza departamento y marca ingreso inconsistente. | Conservar variables útiles y hogares. |
+| [Integración ECV](src/ecv/transform.py) | Uniones izquierdas por hogar y luego vivienda. | Mantener grano hogar. |
+| Categorías | Servicios 1/2 a booleano; choques/estrategias marcado/no marcado. | No confundir vacío de selección múltiple con nulo analítico. |
+| Severidad/ingreso | Puntajes 0, 1–3, 4–6 y 7–8; código 3 FIES implica «Sin dato»; quintiles por factor acumulado. | Segmentación R4–R5; cortes de severidad requieren respaldo metodológico. |
+| Medidas ECV | Coma a punto; `to_numeric(errors='coerce')`. | Conversiones inválidas pasan a nulo: requieren seguimiento. |
+| [Transformación EVA](src/eva/transform.py) | Punto decimal, año entero y sumas a departamento–cultivo–año; dos decimales. | Comparar cultivos y conservar producción; no sumar rendimientos. |
+| [Canasta](config/canasta_cultivos.csv) | 160 cultivos clasificados, 139 incluidos; referencia metodológica P3204. | Selección explícita compartida por R6–R7; excepciones en [reglas](docs/reglas_calidad.md). |
+| [Variación](src/eva/dimensional_model.py) | Estados `comparable`, `base_cero`, `solo_2024`, `solo_2025`. | Evitar divisiones por cero y falsas caídas. |
+| Faltantes/duplicados | Bogotá con nulos agrícolas; no se deduplican silenciosamente registros crudos. | Distinguir ausencia de información de producción cero. |
+
+| Contrato | Definición real |
+|---|---|
+| Claves | ECV interna: `DIRECTORIO`, `ORDEN`; vivienda por `DIRECTORIO`. Entre fuentes: código departamental. |
+| Entrada | Hogar ECV; municipio–código–período EVA. |
+| Salida | Hogares intactos y una tabla departamental de indicadores para ECV 2025. |
+| Año | Filtros 2024/2025 y diversidad 2025; **no** es columna de unión del cruce final. |
+| Unión | Dimensión departamental como base; uniones izquierdas de agregados; ECV validada `one_to_one`. |
+| No coincidentes | Código ECV sin dimensión detiene; ausencia agrícola conserva nulos. |
+| Columnas finales | Campos de `fact_indicadores_departamento` descritos en sección 13. |
+| Calidad | C10–C16; agregar antes de cruzar evita multiplicar hogares. |
+
+**Fórmulas implementadas:** las probabilidades FIES ya están en escala 0–100: `prevalencia = Σ(factor × probabilidad) / Σ(factor)` sobre hogares con FIES válida, sin otro factor 100. Esto sustituye la formulación binaria preliminar. R7: `variacion_pct = 100 × (P2025/P2024 − 1)` y `pct_cultivos_en_descenso = 100 × descensos/comparables`.
+
+## 13. Modelo dimensional refinado y justificación
+
+Especificaciones: [DDL](sql/create_tables.sql), [modelo editable](docs/modelo_dimensional.dbml), [modelo ECV](src/ecv/dimensional_model.py) y [modelo EVA](src/eva/dimensional_model.py).
+
+| Dimensión | Campos principales | Pregunta/función |
+|---|---|---|
+| `dim_geografia` | `id_geografia`; códigos/nombres de departamento, región y clase. | R1; geografía del hogar. |
+| `dim_nivel_ingreso` | `id_nivel_ingreso`, `codigo_quintil`, `nombre_quintil`. | R5; quintiles y categoría inconsistente. |
+| `dim_nivel_severidad_ia` | `id_nivel_severidad_ia`, `nombre_severidad`, límites de puntaje. | R4; severidad. |
+| `dim_choque_economico` | `id_choque_economico`, 11 banderas `choque_*`, `numero_choques`. | R3; combinaciones observadas. |
+| `dim_estrategia_afrontamiento` | `id_estrategia_afrontamiento`, 14 banderas `estrategia_*`, `numero_estrategias`. | R4; combinaciones observadas. |
+| `dim_departamento` | `id_departamento`, `codigo_departamento`, `nombre_departamento`. | R6–R7; código geográfico compartido. |
+| `dim_cultivo` | `id_cultivo`, nombre, grupo, subgrupo, ciclo, estado físico, `en_canasta`, `motivo_canasta`. | R6–R7; cultivo y canasta. |
+
+| Hecho | Grano y claves | Medidas/indicadores |
+|---|---|---|
+| `fact_seguridad_alimentaria_hogar` | Hogar; PK `id_hogar`; natural única `directorio`, `orden`; cinco FK ECV. | Servicios booleanos, `factor_expansion`, `prob_ia_moderada_grave`, `prob_ia_grave`; prevalencias R1–R5. |
+| `fact_produccion_agricola` | Departamento–cultivo–año; PK `id_produccion`; combinación única y dos FK. | `area_sembrada_ha`, `area_cosechada_ha`, `produccion_t`, `numero_municipios`, `fecha_extraccion`. |
+| `fact_variacion_produccion` | Departamento–cultivo, 2024→2025; PK compuesta y dos FK. | `produccion_2024_t`, `produccion_2025_t`, `variacion_pct`, `estado_comparabilidad`, `en_descenso`. |
+| `fact_indicadores_departamento` | Departamento para 2025; PK/FK `id_departamento`. | `hogares_muestra`, `hogares_con_fies`, `hogares_expandidos`, `prevalencia_ia_moderada_grave`, `prevalencia_ia_grave`, `diversidad_cultivos_2025`, `cultivos_comparables`, `cultivos_en_descenso`, `pct_cultivos_en_descenso`, `baja_cobertura`. |
+
+```mermaid
+erDiagram
+    dim_geografia ||--o{ fact_seguridad_alimentaria_hogar : id_geografia
+    dim_nivel_ingreso ||--o{ fact_seguridad_alimentaria_hogar : id_nivel_ingreso
+    dim_nivel_severidad_ia ||--o{ fact_seguridad_alimentaria_hogar : id_nivel_severidad_ia
+    dim_choque_economico ||--o{ fact_seguridad_alimentaria_hogar : id_choque_economico
+    dim_estrategia_afrontamiento ||--o{ fact_seguridad_alimentaria_hogar : id_estrategia_afrontamiento
+    dim_departamento ||--o{ fact_produccion_agricola : id_departamento
+    dim_cultivo ||--o{ fact_produccion_agricola : id_cultivo
+    dim_departamento ||--o{ fact_variacion_produccion : id_departamento
+    dim_cultivo ||--o{ fact_variacion_produccion : id_cultivo
+    dim_departamento ||--o| fact_indicadores_departamento : id_departamento
+```
+
+Se preserva el grano hogar y se añaden hechos con granos agrícolas distintos. `dim_departamento` y `dim_geografia` comparten código, sin FK física entre ambas. Las claves sustitutas son enteros reconstruidos en cada carga; no hay historización de dimensiones. El año es atributo del hecho agrícola; los consolidados fijan sus períodos en el código.
+
+## 14. Validación de datos preparados
+
+| Grupo | Comprobación | Límite actual |
+|---|---|---|
+| Hogares | C10 identidad/conteos; C12 FIES/severidad; C13 banderas/conteos. | Conteo confrontado con transformados, no fuente cruda. |
+| Integración | C11 prevalencia recompuesta y hogares; C15 departamentos únicos y faltantes. | Referencia 21,1 % fijada a esta edición ECV. |
+| Agricultura | C14 producción/llave; C16 comparabilidad/nulos/rangos; A3 cobertura. | No sustituye todas las restricciones SQL. |
+| Autorización | Compuerta 3 aprobada, incluso con advertencias; reporte y Parquet íntegros. | Integridad referencial completa se exige al insertar en PostgreSQL. |
+
+[Implementación](src/calidad/compuertas.py): las compuertas 1–2 preceden la transformación; la 3 sucede al modelado/integración. No existe validación GX exhaustiva de todos los tipos o FK antes de cargar.
+
+## 15. Implementación y carga del almacén de datos
+
+| Aspecto | Implementación |
+|---|---|
+| Motor/esquema | PostgreSQL 16, base `warehouse`, esquema `public`. |
+| Estructura | 11 tablas del [DDL](sql/create_tables.sql) y 8 [vistas](sql/vistas_analiticas.sql). |
+| Estrategia | [Carga completa](src/carga.py): crear si no existe, `TRUNCATE` conjunto, inserciones de 5.000, conteos y recreación de vistas. |
+| Orden | Siete dimensiones antes de cuatro hechos. |
+| Transacción | Un bloque de conexión; un error revierte el reemplazo completo. |
+| Restricciones | PK, `UNIQUE`, `NOT NULL`, FK y comprobaciones del DDL; no hay actualización incremental. |
+| Conciliación | Conteos SQL iguales a cada Parquet; no compara contenido fila a fila durante la carga. |
+| Informe | `carga/carga.json`, escrito después del commit: fecha, estado de compuerta y filas por tabla. |
+
+```sql
+SELECT count(*) FROM fact_seguridad_alimentaria_hogar;
+SELECT * FROM vw_r6_diversidad_departamental ORDER BY codigo_departamento;
+SELECT estado_comparabilidad, count(*)
+FROM fact_variacion_produccion GROUP BY estado_comparabilidad;
+```
+
+`CREATE TABLE IF NOT EXISTS` no migra esquemas incompatibles. La base se inicializa por Compose; la tarea crea las tablas.
+
+## 16. Diseño del DAG e interfaces de tareas
+
+[DAG](dags/etl_dag.py): `inseguridad_alimentaria_etl`; manual (`schedule=None`), `catchup=False`, una corrida activa y 30 minutos por tarea. Parámetro booleano `falla_controlada=False`.
+
+```mermaid
+flowchart LR
+    P[preparar_lote] --> E1[extraer_ecv] --> V1[validar_ecv_cruda]
+    P --> E2[extraer_eva] --> V2[validar_eva_cruda]
+    V1 --> T1[transformar_ecv]
+    V2 --> T1
+    V1 --> T2[transformar_eva]
+    V2 --> T2
+    T1 --> M1[modelar_ecv] --> I[integrar_indicadores]
+    T2 --> M2[modelar_eva] --> I
+    I --> V3[validar_preparados] --> C[cargar]
+```
+
+| Tarea | Responsabilidad/entrada | Salida en el lote | Éxito |
+|---|---|---|---|
+| `preparar_lote` | Carpeta desde `run_id`. | `lote.json` y ruta. | Creada/reutilizada. |
+| `extraer_ecv` | Congelar tres CSV locales. | `ecv/raw/` y manifiesto. | Archivos registrados. |
+| `validar_ecv_cruda` | C1–C2 sobre copias íntegras. | `calidad/compuerta_1.json`. | Sin críticas fallidas. |
+| `extraer_eva` | Conteos/páginas o copia previa; parámetro de prueba. | `eva/raw/eva_2024_2025.json`. | Extracción guardada. |
+| `validar_eva_cruda` | C3–C9, A1–A2. | `calidad/compuerta_2.json`. | Sin críticas fallidas. |
+| `transformar_ecv` | Limpiar/integrar ECV. | `ecv/procesado/hogares_transformados.parquet`. | Transformación terminada. |
+| `modelar_ecv` | Tabla transformada a modelo. | Seis tablas Parquet. | Modelo construido. |
+| `transformar_eva` | Convertir, agregar, clasificar canasta. | `eva/procesado/produccion_agregada.parquet`. | Cultivos clasificados. |
+| `modelar_eva` | Agregado y DIVIPOLA a modelo. | Cuatro tablas Parquet. | Referencias coherentes. |
+| `integrar_indicadores` | Ambos modelos agregados. | `integrado/procesado/fact_indicadores_departamento.parquet`. | Sin código ECV huérfano. |
+| `validar_preparados` | C10–C16, A3. | `calidad/compuerta_3.json`. | Sin críticas fallidas. |
+| `cargar` | Tablas aprobadas y URL del almacén. | Tablas, vistas, `carga/carga.json`. | Commit y conteos conciliados. |
+
+Las tareas reciben y devuelven la ruta del lote por XCom; los datos están en disco, no en memoria compartida. [Configuración](src/comun/config.py): rutas por entorno y conexión `ETL_DATABASE_URL`, sin Airflow Connections. La [captura del grafo](docs/inseguridad_alimentaria_etl-graph.png) acredita el diseño visible, no una corrida exitosa.
+
+## 17. Políticas de fallos y reintentos
+
+| Situación | Respuesta Python | Política Airflow |
+|---|---|---|
+| Red, tiempo de espera, HTTP 429/500/502/503/504. | Petición inicial y hasta tres reintentos con 2, 4 y 8 segundos; límite HTTP 60 segundos por petición. | `extraer_eva`: dos reintentos cada cinco minutos si persiste. |
+| JSON no válido. | También reintenta; si persiste, `ErrorTransitorio`. | Política de extracción. |
+| Otro HTTP distinto de 200 o estructura no lista. | `ErrorDeterminista`. | `AirflowFailException`, sin reintento. |
+| Base inaccesible. | `ErrorTransitorio`; conexión limitada a 15 segundos. | `cargar`: dos reintentos cada minuto. |
+| Calidad crítica, huella alterada o error SQL. | Determinista; SQL revierte transacción. | Sin reintento; dependientes bloqueadas. |
+| A1–A3. | Informe y registro. | Continúa. |
+| Otras tareas. | Propagan errores. | Cero reintentos por defecto. |
+
+Código: [errores](src/comun/errores.py), [extractor](src/eva/extract.py), [carga](src/carga.py) y [DAG](dags/etl_dag.py). Los registros incluyen lote, filas y reglas. Una falla crítica requiere corregir la causa.
+
+## 18. Evidencia de ejecución exitosa
+
+| Evidencia disponible | Demuestra | No demuestra |
+|---|---|---|
+| [Perfilamiento con salidas](notebooks/hallazgos_perfilamiento.md). | Características de fuentes examinadas. | Doce tareas completadas en Airflow. |
+| [Grafo del DAG](docs/inseguridad_alimentaria_etl-graph.png). | Tareas/dependencias visibles. | Estado `success`, fecha o filas cargadas. |
+| [Prueba de compuertas](tests/test_compuertas.py). | Existe una comprobación diseñada sobre datos reales. | Ejecución en este entorno. |
+
+**Pendiente:** corrida A con `run_id`, fecha, doce estados `success`, tres reportes, manifiestos y `carga.json`. No se localizaron lotes con esas evidencias. Las 92.496 filas de las guías son una referencia documental, no un conteo de carga verificado en esta revisión.
+
+## 19. Evidencia de fallo controlado
+
+| Elemento | Prueba B implementada |
+|---|---|
+| Activación | Corrida nueva con `falla_controlada=true`. |
+| Condición | Duplica un registro EVA y ajusta conteos simulados para aislar la falla de unicidad. |
+| Detección | `validar_eva_cruda`, C7. |
+| Esperado | Reporte rechazado; tarea fallida sin reintento; transformación/carga bloqueadas; almacén intacto. |
+| Diseño verificable | [Extractor](src/eva/extract.py), [prueba de extracción](tests/test_extract_eva.py), [prueba de compuerta](tests/test_compuertas.py). |
+| Observado | No hay corrida B ni reporte conservado; pendiente de demostrar. |
+| Recuperación | Corregir causa y crear corrida nueva con parámetro falso: cambiarlo en el mismo lote no elimina su copia duplicada congelada. |
+
+Es una falla intencional; los mensajes de cierre de Docker no sustituyen evidencia de esta prueba.
+
+## 20. Repetibilidad y reejecución segura
+
+| Propiedad | Mecanismo y alcance |
+|---|---|
+| Extracción repetible | Lote `sha256(run_id)[:24]`; misma corrida reutiliza copias sin consultar EVA otra vez. |
+| Integridad | SHA-256, manifiestos y lecturas verificadas; temporales reemplazados al terminar. |
+| Transformación reproducible | Requiere iguales fuentes, referencias, canasta, código y dependencias. No todos estos elementos quedan congelados por lote. |
+| Carga idempotente | Reemplazo completo en transacción; repetir el mismo modelo no acumula filas. Una extracción nueva puede producir datos diferentes. |
+| Fallo parcial | Rollback conserva carga anterior; si falla el informe después del commit, repetir reemplaza nuevamente el modelo. |
+| Concurrencia | Una corrida activa; sin política adicional para cargas externas concurrentes. |
+| Prueba C | [Código](tests/test_carga.py) compara conteos y huellas de 11 tablas tras dos cargas. Falta reporte ejecutado conservado. |
+| Retención | Sin limpieza automática de lotes. |
+
+## 21. Tablero y productos analíticos
+
+Las [ocho vistas](sql/vistas_analiticas.sql) están implementadas para PostgreSQL. [La guía del tablero](docs/guia_dashboard.md) propone Power BI, filtros y gráficos; no se encontró un informe final ni capturas del tablero.
+
+| Producto | Fuente y medida | Visualización prevista | Estado |
+|---|---|---|---|
+| Territorio | `vw_r1_distribucion_territorial`: prevalencias ponderadas. | Barras/mapa; distinguir región–departamento de departamento único. | Vista implementada; tablero pendiente. |
+| Servicios | `vw_r2_servicios_publicos`: prevalencias por servicios. | Barras por combinación. | Vista implementada. |
+| Choques | `vw_r3_choques_economicos`: prevalencia por número de choques. | Barras o línea. | Vista implementada. |
+| Afrontamiento | `vw_r4_estrategias_severidad`: distribución ponderada. | Barras al 100 % por severidad. | Vista implementada. |
+| Ingreso | `vw_r5_quintiles_ingreso`: prevalencia por quintil. | Barras; separar dato inconsistente. | Vista implementada. |
+| Diversidad | `vw_r6_diversidad_departamental`: diversidad y prevalencia. | Dispersión por departamento. | Vista implementada. |
+| Variación | `vw_r7_variacion_cultivo`, `vw_r7_descenso_departamental`. | Tabla por cultivo y dispersión departamental. | Vistas implementadas. |
+
+Los filtros previstos son departamento, combinación de servicios, quintil, severidad y cultivo, según cada vista. Las prevalencias usan probabilidades y factores originales; no deben promediarse porcentajes territoriales. Correlaciones y tiempos citados en las guías requieren resultados reproducibles adicionales antes de presentarse como hallazgos del tablero.
+
+## 22. Trazabilidad de requisitos, indicadores y proceso completo
+
+«Sin reporte» indica código existente sin ejecución preservada que cierre la trazabilidad.
+
+| Requisito | Objetivo | Indicador o aceptación | Fuente | Regla de calidad | Transformación | Tabla del almacén | Tarea Airflow | Evidencia |
+|---|---|---|---|---|---|---|---|---|
+| R1 | Territorio. | Prevalencias por territorio. | ECV. | C1–C2, C10–C11. | [Geografía/probabilidades](src/ecv/transform.py). | `fact_seguridad_alimentaria_hogar`, `dim_geografia`. | `transformar_ecv`, `modelar_ecv`, `cargar`. | [Vista R1](sql/vistas_analiticas.sql); sin reporte. |
+| R2 | Servicios. | Prevalencias por acceso. | ECV. | C1, C10–C11; FK/NOT NULL SQL. | [Banderas](src/ecv/transform.py). | `fact_seguridad_alimentaria_hogar`. | `transformar_ecv`, `cargar`. | [Vista R2](sql/vistas_analiticas.sql); sin reporte. |
+| R3 | Choques. | Prevalencias por conteo. | ECV. | C1, C10–C11, C13. | [Banderas/conteo](src/ecv/dimensional_model.py). | Hecho hogar, `dim_choque_economico`. | `modelar_ecv`, `validar_preparados`. | [Vista R3](sql/vistas_analiticas.sql); sin reporte. |
+| R4 | Afrontamiento. | Distribución por severidad/estrategias. | ECV. | C1, C12–C13. | [Puntaje/banderas](src/ecv/transform.py). | Hecho hogar, dimensiones de severidad/estrategias. | `transformar_ecv`, `modelar_ecv`. | [Vista R4](sql/vistas_analiticas.sql); sin reporte. |
+| R5 | Ingreso. | Prevalencias por quintil. | ECV. | C1, C10–C11; falta regla específica de ingreso. | [Marca](src/ecv/clean.py) y [quintiles](src/ecv/transform.py). | Hecho hogar, `dim_nivel_ingreso`. | `transformar_ecv`, `modelar_ecv`. | [Vista R5](sql/vistas_analiticas.sql); sin reporte. |
+| R6 | Diversidad. | Cultivos positivos 2025 frente a prevalencia; una fila departamental. | ECV/EVA. | C2–C9, C11, C14–C15, A1–A3. | [Canasta](src/eva/transform.py) y [cruce](src/eva/dimensional_model.py). | `fact_indicadores_departamento`, dimensiones agrícolas. | `transformar_eva`, `integrar_indicadores`, `validar_preparados`. | [Prueba sintética](tests/test_eva_modelo.py), vista R6; sin reporte. |
+| R7 | Caída productiva. | Variación por cultivo y porcentaje en descenso frente a prevalencia. | ECV/EVA. | C3–C9, C11, C14–C16, A3. | [Comparabilidad](src/eva/dimensional_model.py). | `fact_variacion_produccion`, `fact_indicadores_departamento`. | `modelar_eva`, `integrar_indicadores`, `validar_preparados`. | [Prueba sintética](tests/test_eva_modelo.py), vistas R7; sin reporte. |
+
+Todos comparten extracción por lotes, validación y carga. Faltan A/B/C, comparación congelada con la línea base y tablero para demostrar el cumplimiento completo.
+
+## 23. Instalación y ejecución
+
+### Configuración inicial en PowerShell
+
+Requisitos: Git, Docker Desktop con contenedores Linux y Docker Compose v2. Versiones: Airflow 3.1.8, PostgreSQL 16, GX 1.23.1. El [Dockerfile](Dockerfile) no fija una etiqueta específica de Python; la decide la imagen base. La revisión local utilizó Python 3.12.10 y los notebooks documentan 3.13.
+
+```powershell
+git clone https://github.com/valedeveloper/inseguridad-alimentaria-2.git
+Set-Location inseguridad-alimentaria-2
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+Editar `.env` con valores propios; [la plantilla](.env.example) contiene ejemplos de desarrollo. Descargar los tres CSV según [las instrucciones DANE](data/raw/README.md), en `data/raw/ecv/`:
+
+| Archivo | Grano |
+|---|---|
+| `Datos de la vivienda.csv` | Vivienda. |
+| `Servicios del hogar.csv` | Hogar. |
+| `Condiciones de vida del hogar y tenencia de bienes.csv` | Hogar. |
+
+| Variables | Uso |
+|---|---|
+| `AIRFLOW_UID`, `AIRFLOW_IMAGE_NAME`, `AIRFLOW_WEB_PORT` | Usuario de contenedor, imagen y puerto; 8081 por defecto. |
+| `_AIRFLOW_WWW_USER_USERNAME`, `_AIRFLOW_WWW_USER_PASSWORD`, `AIRFLOW__API_AUTH__JWT_SECRET` | Acceso y firma Airflow; sustituir ejemplos al compartir el entorno. |
+| `WAREHOUSE_PASSWORD` | Contraseña del almacén; Compose construye `ETL_DATABASE_URL`. |
+| `ETL_DATA_DIR`, `ECV_RAW_DIR`, `ETL_REFERENCE_DIR` | Rutas de datos. En Docker deben ser internas; normalmente conservar valores por defecto. |
+| `ETL_CONFIG_DIR`, `ETL_SQL_DIR`, `ETL_DATABASE_URL` | Canasta, SQL y conexión: [configuración](src/comun/config.py). |
+
+[DIVIPOLA](data/reference/divipola_departamentos.csv), [diccionario](data/reference/Plantilla_Diccionario_Datos.csv) y [canasta](config/canasta_cultivos.csv) están versionados. EVA se descarga en cada lote nuevo.
+
+```powershell
+docker compose config --quiet
+docker compose build
+docker compose up airflow-init
+docker compose up -d
+docker compose ps
+docker compose exec airflow-scheduler airflow version
+docker compose exec airflow-scheduler airflow dags list-import-errors
+```
+
+La inicialización migra metadatos y crea el usuario; PostgreSQL crea `warehouse`. La tarea `cargar` crea las tablas. Interfaz: [Airflow local](http://localhost:8081), con credenciales configuradas. Almacén: `localhost:5434`.
+
+### Corridas posteriores
+
+```powershell
+docker compose up -d
+docker compose exec airflow-scheduler airflow dags unpause inseguridad_alimentaria_etl
+docker compose exec airflow-scheduler airflow dags trigger inseguridad_alimentaria_etl
+docker compose logs --tail 100 airflow-scheduler
+docker compose exec warehouse psql -U warehouse -d warehouse -c "SELECT count(*) FROM fact_seguridad_alimentaria_hogar;"
+docker compose exec warehouse psql -U warehouse -d warehouse -c "SELECT * FROM vw_r6_diversidad_departamental;"
+```
+
+Para B, activar `falla_controlada` en una corrida nueva desde la interfaz. Para C, limpiar y repetir A con el mismo `run_id`, conservando conteos/huellas antes y después. [Procedimiento](docs/orquestacion.md).
+
+### Pruebas locales y detención
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pytest -m "not integracion"
+.\.venv\Scripts\python.exe -m pytest -m "integracion and not warehouse"
+# Solo contra un almacén de pruebas: reemplaza las tablas del modelo.
+# Definir ETL_DATABASE_URL con la conexión de ese almacén antes del comando.
+.\.venv\Scripts\python.exe -m pytest -m warehouse
+docker compose down
+```
+
+Integración requiere `data/profiling/eva_2024_2025.json`, generado por [el notebook EVA](notebooks/01_profiling_eva.ipynb); si faltan esa copia o los CSV, se omiten pruebas. El notebook ECV de comparación requiere resultados de la primera entrega; el DAG no. Los módulos no cargan `.env` automáticamente fuera de Compose. `docker compose down` conserva los volúmenes.
+
+**Comprobado en esta revisión:** `docker compose config --quiet` pasó. Servicios detenidos; no se iniciaron corridas ni cargas. `python -m pytest --version` informó que `pytest` no estaba instalado; la suite no se presenta como aprobada.
+
+## 24. Supuestos y limitaciones
+
+| Tipo | Limitación | Consecuencia o mejora |
+|---|---|---|
+| Metodología | Asociación departamental, sin diseño causal. | No atribuir causalidad ni comportamiento individual. |
+| Metodología | Canasta P3204 con excepciones, incluido destino industrial/animal no separable. | Revisar sensibilidad de la selección. |
+| Metodología | Cortes de puntaje FIES codificados. | Confirmar respaldo; no equipararlos sin validación a las probabilidades oficiales. |
+| Datos | EVA revisable, cifras repetidas entre años y Bogotá sin cobertura. | Preservar copia/fecha y faltantes; no inferir estabilidad a partir de variación cero. |
+| Datos | Se suman períodos anuales/semestrales de «Plantas aromáticas» en el hecho general. | Posible sobrestimación; cultivo excluido de R6–R7. |
+| Datos | Producción no mide acceso o consumo. | Toneladas no representan suficiencia nutricional. |
+| Técnica | C10 compara transformados/hecho; faltan controles exhaustivos de FIES e ingreso. | La conciliación nacional no detecta toda corrupción local. |
+| Técnica | Canasta, referencias y código no se congelan todos por corrida. | Registrar versiones para reproducibilidad completa. |
+| Técnica | Sin carga incremental, migraciones, historización o retención automática. | Requiere rediseño para esos usos. |
+| Pruebas | Faltan datos locales y reportes A/B/C. C3 sin red se deriva de los propios registros en las pruebas. | Esa prueba no contrasta de forma independiente el conteo real de la API. |
+| Presentación | Sin tablero final ni salidas reproducibles de correlaciones conservadas. | Completar informe y evidencias antes de afirmar hallazgos. |
+| Documentación | [Imagen de contexto](docs/contexto_problema.png) atribuye cifras a ENSIN, aunque el proyecto usa ECV. | Corregir atribución y respaldar cifras antes de usarla como evidencia estadística. |
+| Operación | Contenedores antiguos Redis/Celery detenidos, fuera del Compose actual. | No cambian la arquitectura LocalExecutor; no se eliminaron durante la revisión. |
+
+Considerar ponderación, diseño muestral y cobertura antes de generalizar. [Pendientes y verificación](docs/revision_readme.md).
+
+## 25. Integrantes y responsabilidades
+
+Asignaciones documentadas por el equipo en el README previo; no inferidas de autoría Git.
+
+| Integrante | Responsabilidades | Componentes o entregables |
+|---|---|---|
+| Santiago Castillo y Julián Aguilar | Modelamiento dimensional y desarrollo del código. | Modelo y módulos técnicos. |
+| Valeria Jiménez Bedoya | Estructura documental y contextualización del problema. | README y contexto. |
+| Danna Isabella Mosquera Mosquera | Modelado gráfico del tablero. | Diseño visual; informe final pendiente. |
