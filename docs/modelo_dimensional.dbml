@@ -1,0 +1,200 @@
+// Modelo dimensional - Segunda Entrega (aprobado 2026-10-21)
+// Visualizar con dbdiagram.io o la extension DBML de VS Code.
+// Las tablas del grupo "hogares" son las de la Primera Entrega, sin cambios.
+
+Project inseguridad_alimentaria {
+  database_type: 'PostgreSQL'
+  Note: 'ECV 2025 (DANE) + EVA 2024-2025 (UPRA). R1-R5 sobre el hecho de hogares; R6-R7 cruzan hogares y produccion agricola por departamento (drill-across).'
+}
+
+// =====================================================================
+// HOGARES (Primera Entrega, sin cambios)
+// =====================================================================
+
+Table dim_geografia {
+  id_geografia integer [pk]
+  codigo_departamento varchar(2) [not null, note: 'DIVIPOLA; atributo conformado con dim_departamento']
+  nombre_departamento text [not null]
+  codigo_region varchar(1) [not null]
+  nombre_region text [not null]
+  codigo_clase varchar(1) [not null]
+  nombre_clase text [not null]
+  Note: 'Grano: departamento x clase de area (65 filas)'
+}
+
+Table dim_nivel_ingreso {
+  id_nivel_ingreso integer [pk]
+  codigo_quintil varchar(20) [not null]
+  nombre_quintil text [not null]
+  Note: 'Grano: quintil de ingreso per capita o Dato inconsistente (6 filas)'
+}
+
+Table dim_nivel_severidad_ia {
+  id_nivel_severidad_ia integer [pk]
+  nombre_severidad text [not null]
+  puntaje_fies_minimo integer
+  puntaje_fies_maximo integer
+  Note: 'Grano: nivel de severidad FIES (5 filas)'
+}
+
+Table dim_choque_economico {
+  id_choque_economico integer [pk]
+  choque_jefe_perdio_empleo boolean [not null]
+  choque_conyuge_perdio_empleo boolean [not null]
+  choque_otro_miembro_perdio_empleo boolean [not null]
+  choque_cierre_negocio boolean [not null]
+  choque_no_vendio_produccion boolean [not null]
+  choque_atraso_jardin_colegio boolean [not null]
+  choque_no_pago_universidad boolean [not null]
+  choque_atraso_vivienda boolean [not null]
+  choque_atraso_administracion boolean [not null]
+  choque_atraso_servicios_publicos boolean [not null]
+  choque_atraso_impuestos boolean [not null]
+  numero_choques integer [not null]
+  Note: 'Junk dimension: combinaciones observadas'
+}
+
+Table dim_estrategia_afrontamiento {
+  id_estrategia_afrontamiento integer [pk]
+  estrategia_empezaron_a_trabajar boolean [not null]
+  estrategia_nuevas_fuentes_ingreso boolean [not null]
+  estrategia_vivir_con_familiares boolean [not null]
+  estrategia_gastaron_ahorros boolean [not null]
+  estrategia_se_endeudaron boolean [not null]
+  estrategia_vendieron_bienes boolean [not null]
+  estrategia_vendieron_vivienda boolean [not null]
+  estrategia_retiro_escolar boolean [not null]
+  estrategia_retiro_universidad boolean [not null]
+  estrategia_disminuyeron_gasto_alimentos boolean [not null]
+  estrategia_ayuda_gobierno boolean [not null]
+  estrategia_ayuda_familiares_amigos boolean [not null]
+  estrategia_subsidio_desempleo boolean [not null]
+  estrategia_otra boolean [not null]
+  numero_estrategias integer [not null]
+  Note: 'Junk dimension: combinaciones observadas'
+}
+
+Table fact_seguridad_alimentaria_hogar {
+  id_hogar integer [pk]
+  directorio varchar(10) [not null]
+  orden varchar(2) [not null]
+  id_geografia integer [not null]
+  id_nivel_ingreso integer [not null]
+  id_nivel_severidad_ia integer [not null]
+  id_choque_economico integer [not null]
+  id_estrategia_afrontamiento integer [not null]
+  tiene_acueducto boolean [not null]
+  tiene_alcantarillado boolean [not null]
+  factor_expansion decimal(15,9) [not null]
+  prob_ia_moderada_grave decimal(12,9) [note: 'Nulo en 718 hogares sin FIES valido']
+  prob_ia_grave decimal(12,9)
+  indexes {
+    (directorio, orden) [unique]
+  }
+  Note: 'Grano: un hogar de la ECV 2025 (87.060 filas). R1-R5.'
+}
+
+Ref: fact_seguridad_alimentaria_hogar.id_geografia > dim_geografia.id_geografia
+Ref: fact_seguridad_alimentaria_hogar.id_nivel_ingreso > dim_nivel_ingreso.id_nivel_ingreso
+Ref: fact_seguridad_alimentaria_hogar.id_nivel_severidad_ia > dim_nivel_severidad_ia.id_nivel_severidad_ia
+Ref: fact_seguridad_alimentaria_hogar.id_choque_economico > dim_choque_economico.id_choque_economico
+Ref: fact_seguridad_alimentaria_hogar.id_estrategia_afrontamiento > dim_estrategia_afrontamiento.id_estrategia_afrontamiento
+
+// =====================================================================
+// AGRICOLA (nuevo)
+// =====================================================================
+
+Table dim_departamento {
+  id_departamento integer [pk]
+  codigo_departamento varchar(2) [not null, unique, note: 'DIVIPOLA']
+  nombre_departamento text [not null]
+  Note: 'Dimension conformada reducida (shrunken) de dim_geografia: mismos codigos y nombres, solo nivel departamento (33 filas, incluye Bogota sin datos agricolas)'
+}
+
+Table dim_cultivo {
+  id_cultivo integer [pk]
+  nombre_cultivo text [not null, unique]
+  grupo_cultivo text [not null]
+  subgrupo text [not null]
+  ciclo_cultivo text [not null]
+  estado_fisico text [not null]
+  en_canasta boolean [not null, note: 'Desde config/canasta_cultivos.csv']
+  motivo_canasta text [not null]
+  Note: 'Grano: un cultivo de EVA (160 filas; 116 en la canasta)'
+}
+
+Table fact_produccion_agricola {
+  id_produccion integer [pk]
+  id_departamento integer [not null]
+  id_cultivo integer [not null]
+  anio smallint [not null, note: 'Degenerada: 2024 o 2025']
+  area_sembrada_ha decimal(14,2) [not null]
+  area_cosechada_ha decimal(14,2) [not null]
+  produccion_t decimal(16,2) [not null]
+  numero_municipios integer [not null]
+  fecha_extraccion timestamptz [not null, note: 'La UPRA puede revisar 2024 y 2025']
+  indexes {
+    (id_departamento, id_cultivo, anio) [unique]
+  }
+  Note: 'Grano: departamento x cultivo x anio. Suma municipios y periodos de EVA.'
+}
+
+Ref: fact_produccion_agricola.id_departamento > dim_departamento.id_departamento
+Ref: fact_produccion_agricola.id_cultivo > dim_cultivo.id_cultivo
+
+Table fact_variacion_produccion {
+  id_departamento integer [not null]
+  id_cultivo integer [not null]
+  produccion_2024_t decimal(16,2) [note: 'Nulo si no hay registro en 2024']
+  produccion_2025_t decimal(16,2) [note: 'Nulo si no hay registro en 2025']
+  variacion_pct decimal(10,2) [note: 'Nulo si no es comparable']
+  estado_comparabilidad varchar(20) [not null, note: 'comparable | base_cero | solo_2024 | solo_2025']
+  en_descenso boolean [note: 'Nulo si no es comparable']
+  indexes {
+    (id_departamento, id_cultivo) [pk]
+  }
+  Note: 'Hecho consolidado. Grano: departamento x cultivo, 2024 -> 2025. Solo cultivos de la canasta. R7 por cultivo.'
+}
+
+Ref: fact_variacion_produccion.id_departamento > dim_departamento.id_departamento
+Ref: fact_variacion_produccion.id_cultivo > dim_cultivo.id_cultivo
+
+Table fact_indicadores_departamento {
+  id_departamento integer [pk]
+  hogares_muestra integer [not null]
+  hogares_con_fies integer [not null]
+  hogares_expandidos decimal(16,2) [not null]
+  prevalencia_ia_moderada_grave decimal(6,2) [not null]
+  prevalencia_ia_grave decimal(6,2) [not null]
+  diversidad_cultivos_2025 integer [note: 'R6. Nulo para Bogota (sin dato EVA), nunca 0']
+  cultivos_comparables integer [note: 'R7. Nulo para Bogota']
+  cultivos_en_descenso integer [note: 'R7. Nulo para Bogota']
+  pct_cultivos_en_descenso decimal(6,2) [note: 'R7. Nulo si no hay comparables']
+  baja_cobertura boolean [note: 'Menos de 10 cultivos comparables (regla A3)']
+  Note: 'Hecho consolidado (drill-across ECV + EVA). Grano: departamento, 2025 (33 filas). R6 y R7.'
+}
+
+Ref: fact_indicadores_departamento.id_departamento - dim_departamento.id_departamento
+
+// Vinculo conformado entre hogares y agricola (drill-across por departamento).
+// Es una relacion LOGICA: se dibuja aqui para leer el modelo, pero en el DDL NO se crea
+// llave foranea fisica (para no modificar dim_geografia de la Primera Entrega).
+// La coherencia (todo departamento de dim_geografia existe en dim_departamento) se valida al cargar.
+Ref conformada_departamento: dim_geografia.codigo_departamento > dim_departamento.codigo_departamento
+
+TableGroup hogares_primera_entrega {
+  fact_seguridad_alimentaria_hogar
+  dim_geografia
+  dim_nivel_ingreso
+  dim_nivel_severidad_ia
+  dim_choque_economico
+  dim_estrategia_afrontamiento
+}
+
+TableGroup agricola_segunda_entrega {
+  fact_produccion_agricola
+  fact_variacion_produccion
+  fact_indicadores_departamento
+  dim_departamento
+  dim_cultivo
+}
