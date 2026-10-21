@@ -25,15 +25,15 @@
 
 ## 3. Estado y cambios de R1–R5
 
-Se conserva el alcance de R1–R5. Su extracción, limpieza, transformación y modelo dimensional están portados a este repositorio (`src/ecv/`) y producen los mismos resultados que la primera entrega (87.060 hogares; prevalencia nacional 21,10 %). Falta traer las consultas analíticas al warehouse.
+Se conserva el alcance de R1–R5. Su extracción, limpieza, transformación y modelo dimensional están portados a este repositorio (`src/ecv/`) y producen los mismos resultados que la primera entrega (87.060 hogares; prevalencia nacional 21,10 %). Sus consultas analíticas están en el warehouse como vistas ([sql/vistas_analiticas.sql](sql/vistas_analiticas.sql)) y reproducen exactamente los resultados de la primera entrega.
 
 | ID | Requerimiento | Estado actual | Trabajo pendiente |
 |---|---|---|---|
-| R1 | Caracterizar la distribución territorial de la inseguridad alimentaria. | Conservado; modelo implementado. | Consulta analítica por departamento y región en el warehouse. |
-| R2 | Analizar la asociación entre servicios públicos básicos y vulnerabilidad alimentaria. | Conservado; modelo implementado. | Consulta analítica por acceso a servicios en el warehouse. |
-| R3 | Analizar la relación entre choques económicos recientes e inseguridad alimentaria. | Conservado; modelo implementado. | Consulta analítica por número de choques en el warehouse. |
-| R4 | Caracterizar las estrategias de afrontamiento según la severidad de la inseguridad alimentaria. | Conservado; modelo implementado. | Consulta analítica por severidad y estrategias en el warehouse. |
-| R5 | Evaluar la vulnerabilidad alimentaria según el ingreso del hogar. | Conservado; modelo implementado. | Consulta analítica por quintil de ingreso en el warehouse. |
+| R1 | Caracterizar la distribución territorial de la inseguridad alimentaria. | Implementado. | Vista `vw_r1_distribucion_territorial`; falta el dashboard. |
+| R2 | Analizar la asociación entre servicios públicos básicos y vulnerabilidad alimentaria. | Implementado. | Vista `vw_r2_servicios_publicos`; falta el dashboard. |
+| R3 | Analizar la relación entre choques económicos recientes e inseguridad alimentaria. | Implementado. | Vista `vw_r3_choques_economicos`; falta el dashboard. |
+| R4 | Caracterizar las estrategias de afrontamiento según la severidad de la inseguridad alimentaria. | Implementado. | Vista `vw_r4_estrategias_severidad`; falta el dashboard. |
+| R5 | Evaluar la vulnerabilidad alimentaria según el ingreso del hogar. | Implementado. | Vista `vw_r5_quintiles_ingreso`; falta el dashboard. |
 
 ### Avances comunes del proceso de datos
 
@@ -45,9 +45,9 @@ Se conserva el alcance de R1–R5. Su extracción, limpieza, transformación y m
 | Transformación | ECV: módulos de la primera entrega. EVA: agregación a departamento × cultivo × año y canasta de cultivos. |
 | Validación posterior | Great Expectations sobre los datos preparados (compuerta 3) antes de cargar. |
 | Carga | Modelo dimensional completo (11 tablas) con `TRUNCATE` + `INSERT` en una sola transacción. |
-| Pendiente | Consultas analíticas R1–R7, DAG final y evidencia de ejecución. |
+| Pendiente | Dashboard y evidencia de ejecución en Airflow (tests A, B y C). |
 
-La lógica está en `src/` (`ecv/`, `eva/`, `calidad/`, `comun/` y `carga.py`), las reglas de calidad en [docs/reglas_calidad.md](docs/reglas_calidad.md) y el modelo en [docs/modelo_dimensional.dbml](docs/modelo_dimensional.dbml) y [sql/create_tables.sql](sql/create_tables.sql). El DAG ([dags/etl_dag.py](dags/etl_dag.py)) se está actualizando para orquestar estas etapas.
+La lógica está en `src/` (`ecv/`, `eva/`, `calidad/`, `comun/` y `carga.py`), las reglas de calidad en [docs/reglas_calidad.md](docs/reglas_calidad.md) y el modelo en [docs/modelo_dimensional.dbml](docs/modelo_dimensional.dbml) y [sql/create_tables.sql](sql/create_tables.sql). El DAG ([dags/etl_dag.py](dags/etl_dag.py)) orquesta estas etapas; su diseño está en [docs/orquestacion.md](docs/orquestacion.md).
 
 ## 4. Nuevos requerimientos integrados: R6 y R7
 
@@ -63,7 +63,7 @@ La lógica está en `src/` (`ecv/`, `eva/`, `calidad/`, `comun/` y `carga.py`), 
 | Preparación | Consolidar registros municipales y períodos por departamento, cultivo y año, sin duplicarlos. |
 | Selección de cultivos | Canasta fija anclada en la lista oficial de alimentos de la ECV 2025 (pregunta P3204): 139 de 160 cultivos, en [config/canasta_cultivos.csv](config/canasta_cultivos.csv) con el motivo de cada uno. |
 | Trazabilidad | Conservar fecha de extracción, datos descargados, exclusiones y revisiones; verificar campos, unidades y cobertura. |
-| Estado | Extracción agrícola, integración e indicadores implementados; dashboard pendiente. |
+| Estado | Extracción agrícola, integración, indicadores y vistas (`vw_r6_diversidad_departamental`, `vw_r7_variacion_cultivo`, `vw_r7_descenso_departamental`) implementados; dashboard pendiente. |
 
 ### R6. Diversificación agrícola e inseguridad alimentaria
 

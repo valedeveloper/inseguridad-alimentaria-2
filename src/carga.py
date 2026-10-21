@@ -9,7 +9,9 @@ Carga del modelo dimensional al Data Warehouse (PostgreSQL).
    hechos). Si algo falla, PostgreSQL revierte todo y el warehouse queda como
    estaba.
 4. Concilia: el conteo de cada tabla en la base debe ser igual al del lote.
-5. Guarda el resultado en data/batches/<id>/carga/carga.json.
+5. Recrea las vistas analiticas R1-R7 (sql/vistas_analiticas.sql), que consume
+   el dashboard.
+6. Guarda el resultado en data/batches/<id>/carga/carga.json.
 
 Re-ejecucion segura (test C): las fuentes son fotos completas, asi que cada
 carga reemplaza el contenido por el del lote. Cargar dos veces el mismo lote
@@ -32,6 +34,7 @@ from src.comun.config import dir_sql, url_warehouse
 from src.comun.errores import ErrorDeterminista, ErrorTransitorio
 
 NOMBRE_DDL = 'create_tables.sql'
+NOMBRE_VISTAS = 'vistas_analiticas.sql'
 ESTADOS_QUE_PERMITEN_CARGAR = ('aprobada', 'aprobada_con_advertencias')
 log = logging.getLogger(__name__)
 
@@ -68,6 +71,7 @@ def cargar(lote):
     estado_compuerta = _verificar_compuerta_3(lote)
     tablas = {tabla: leer_parquet(lote, fuente, tabla) for fuente, tabla in TABLAS}
     ddl = (dir_sql() / NOMBRE_DDL).read_text(encoding='utf-8')
+    vistas = (dir_sql() / NOMBRE_VISTAS).read_text(encoding='utf-8')
 
     try:
         conexion = psycopg2.connect(url_warehouse(), connect_timeout=15)
@@ -95,6 +99,8 @@ def cargar(lote):
                             f'{len(tablas[tabla])} en el lote.')
                     conteos[tabla] = en_base
                     log.info('Cargada %s: %s filas (conciliado con el lote)', tabla, f'{en_base:,}')
+                cursor.execute(vistas)
+                log.info('Vistas analiticas R1-R7 recreadas (%s)', NOMBRE_VISTAS)
     except psycopg2.Error as error:
         raise ErrorDeterminista(f'Error de base de datos durante la carga (revertida): {error}') from error
     finally:
