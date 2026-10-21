@@ -14,12 +14,9 @@ import re
 
 import pandas as pd
 
-from src.comun.config import dir_referencia
-
 # Tablas de referencia versionadas en data/reference/ (ruta configurable con
-# ETL_REFERENCE_DIR).
-NOMBRE_DICCIONARIO = 'Plantilla_Diccionario_Datos.csv'
-NOMBRE_DIVIPOLA = 'divipola_departamentos.csv'
+# ETL_REFERENCE_DIR); sus nombres viven en src/comun/config.py.
+from src.comun.config import NOMBRE_DICCIONARIO, NOMBRE_DIVIPOLA, dir_referencia
 
 # Los dominios del diccionario vienen como texto con formato "1. Etiqueta",
 # una opcion por linea. Este patron extrae el codigo y su etiqueta.

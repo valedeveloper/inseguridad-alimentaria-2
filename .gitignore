@@ -11,3 +11,4 @@ data/batches/*
 data/raw/ecv/*
 !data/raw/ecv/.gitkeep
 docs/*.dbdiagram
+data/profiling/

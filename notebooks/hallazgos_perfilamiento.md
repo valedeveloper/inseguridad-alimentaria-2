@@ -201,7 +201,7 @@ Cultivos que exigen decisión explícita (no son alimento directo o su destino e
 | Frutales | Plátano de exportación | 441.645 | Destino exportación |
 | Raíces y tubérculos | Yuca industrial | 208.538 | Destino industria |
 
-El catálogo completo (160 cultivos con grupo, subgrupo, estado físico, departamentos y producción) se genera en la sección 25 del notebook (`data/incoming/profiling/catalogo_cultivos_eva.csv`, no versionado).
+El catálogo completo (160 cultivos con grupo, subgrupo, estado físico, departamentos y producción) se genera en la sección 25 del notebook (`data/profiling/catalogo_cultivos_eva.csv`, no versionado).
 
 ---
 
@@ -291,7 +291,7 @@ Las decisiones que este perfilamiento dejó abiertas se cerraron así:
 1. Descargar los tres CSV de la ECV y colocarlos en `data/raw/ecv/` (instrucciones en `data/raw/README.md`). DIVIPOLA ya está en `data/reference/`.
 2. Clonar el repositorio de la Primera Entrega (rama `dev`) en la misma carpeta que este. Solo el notebook 02 lo usa, para leer `results/R1_distribucion_territorial.csv` y contrastar con R1.
 3. Crear el entorno local (Python 3.13) e instalar `requirements.txt`.
-4. Ejecutar `01_profiling_eva.ipynb` (consulta la API y guarda una copia en `data/incoming/profiling/`; con `FORZAR_EXTRACCION = True` vuelve a consultar).
+4. Ejecutar `01_profiling_eva.ipynb` (consulta la API y guarda una copia en `data/profiling/`; con `FORZAR_EXTRACCION = True` vuelve a consultar).
 5. Ejecutar `02_profiling_ecv_departamental.ipynb`.
 
 Las cifras de EVA pueden cambiar si la UPRA revisa 2024 o 2025; la fecha de extracción queda registrada en la copia local.

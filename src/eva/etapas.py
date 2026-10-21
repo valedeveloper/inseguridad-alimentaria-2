@@ -13,9 +13,8 @@ disco (Parquet dentro del lote), nunca por XCom.
 import pandas as pd
 
 from src.comun.artefactos import guardar_parquet, leer_parquet
-from src.comun.config import dir_referencia
+from src.comun.config import NOMBRE_DIVIPOLA, dir_referencia
 from src.ecv.extract import FUENTE as FUENTE_ECV
-from src.ecv.transform import NOMBRE_DIVIPOLA
 from src.eva import extract
 from src.eva.dimensional_model import construir_fact_indicadores, modelar
 from src.eva.extract import FUENTE as FUENTE_EVA

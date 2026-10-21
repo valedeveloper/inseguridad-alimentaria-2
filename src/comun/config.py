@@ -22,6 +22,10 @@ from src.comun.errores import ErrorDeterminista
 
 RAIZ = Path(__file__).resolve().parents[2]
 
+# Tablas de referencia versionadas en data/reference/.
+NOMBRE_DICCIONARIO = 'Plantilla_Diccionario_Datos.csv'
+NOMBRE_DIVIPOLA = 'divipola_departamentos.csv'
+
 
 def _ruta(variable, por_defecto):
     valor = os.getenv(variable)

@@ -24,11 +24,10 @@ import great_expectations as gx
 from src.calidad.gx_comun import ADVERTENCIA, CRITICA, regla, validar
 from src.comun import lotes
 from src.comun.artefactos import leer_parquet
-from src.comun.config import dir_referencia
+from src.comun.config import NOMBRE_DIVIPOLA, dir_referencia
 from src.comun.errores import ErrorCalidadCritica
 from src.ecv.extract import FUENTE as FUENTE_ECV
 from src.ecv.extract import NOMBRE_CONDICIONES_VIDA, NOMBRE_SERVICIOS_HOGAR, NOMBRE_VIVIENDA
-from src.ecv.transform import NOMBRE_DIVIPOLA
 from src.eva.etapas import FUENTE_INTEGRADO
 from src.eva.extract import FUENTE as FUENTE_EVA
 from src.eva.extract import leer_eva
