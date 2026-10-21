@@ -16,14 +16,14 @@ Revisión documental del 21 de octubre de 2026. Alcance: inspección de código,
 | Integración | Claves reales. | Cruce por departamento; años filtrados/fijados en código. | Implementado. | Aclarar que año no es llave del cruce final. |
 | A1 | Cobertura EVA. | `min_value=32`, aunque la regla documental decía igualdad. | Discrepancia documentada. | Describir el mínimo aplicado. |
 | C10 | Conservar hogares. | Contrasta hecho y transformados, no directamente fuente cruda. | Parcial respecto del control de origen a destino. | Declarar el límite del control. |
-| Pruebas A/B/C | Corridas exitosas, rechazo y repetición segura. | Código de prueba y procedimientos; sin lotes/reportes completos disponibles. | No verificable como ejecución. | No certificar éxito ni 92.496 filas cargadas. |
+| Pruebas A/B/C | Corridas exitosas, rechazo y repetición segura. | Código de prueba, procedimientos y tres corridas con captura (README §18: normal, C7 y C1). | A y B con captura; C sin evidencia de la repetición en Airflow. | Conservar logs y reportes de cada lote; no certificar 92.496 filas sin `carga.json`. |
 | Tablero | Producto consultando PostgreSQL. | Guía y vistas; sin informe final. | Parcial. | Presentar visualizaciones como previstas. |
 | Contexto gráfico | Fuente estadística coherente. | Imagen atribuye a ENSIN; el proyecto usa ECV. | Inconsistencia. | Enlazar y señalar revisión de la atribución, sin respaldar cifras no verificadas. |
 | Equipo | Responsabilidades reales. | Nombres/asignaciones del README proporcionado. | Documentado. | Conservar sin atribuciones basadas en commits. |
 
 **Fortalezas:** ramas separadas, compuertas previas a transformar, intercambio por rutas, manifiestos e integridad, comparabilidad explícita y carga completa transaccional.
 
-**Límites de evidencia:** no hay CSV reales en `data/raw/ecv/`, copia en `data/profiling/`, reportes de compuertas o `carga.json` en los lotes inspeccionados. La captura del DAG solo muestra el grafo. Guías que afirman resultados exactos, tiempos o correlaciones no sustituyen reportes ejecutados.
+**Límites de evidencia:** no hay CSV reales en `data/raw/ecv/`, copia en `data/profiling/`, reportes de compuertas o `carga.json` en los lotes inspeccionados. Las capturas de las tres corridas (README §18) no sustituyen esos reportes. Guías que afirman resultados exactos, tiempos o correlaciones no sustituyen reportes ejecutados.
 
 ## 2. README completo
 

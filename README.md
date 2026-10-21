@@ -22,7 +22,7 @@ Proyecto académico de integración de la ECV 2025 del DANE y las Evaluaciones A
 | Modelo | Cinco dimensiones y un hecho por hogar. | Dos dimensiones agrícolas y tres hechos adicionales; 11 tablas. |
 | Ejecución y calidad | Referencia metodológica previa. | Lotes verificables, tres compuertas GX y carga transaccional. |
 
-La rama `dev` es mutable: falta fijar el commit de la primera entrega para certificar equivalencia exacta. La evolución local se observa en `57434a6` (DAG), `10cd0c6` (vistas) y `7688577` (pruebas y guías).
+La rama `dev` es mutable; la referencia queda fijada en el commit `e5ff76d` (estado de `dev` al 21 de octubre de 2026). La evolución local se observa en `57434a6` (DAG), `10cd0c6` (vistas) y `7688577` (pruebas y guías).
 
 ## 3. Estado y cambios de R1–R5
 
@@ -50,7 +50,7 @@ Evidencia: [modelo agrícola](src/eva/dimensional_model.py), [pruebas sintética
 |---|---|---|
 | Responsable | DANE, DIMPE. | UPRA; publicación en Datos Abiertos Colombia. |
 | Fuente oficial | [Catálogo DANE 905](https://microdatos.dane.gov.co/index.php/catalog/905/get-microdata). | [Conjunto de datos EVA](https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Evaluaciones-Agropecuarias-Municipales-EVA-2019-20/uejq-wxrr/about_data). |
-| Acceso técnico | Descarga manual de tres CSV y copia local por corrida. | HTTP GET a [API Socrata](https://www.datos.gov.co/resource/uejq-wxrr.json); |
+| Acceso técnico | Descarga manual de tres CSV y copia local por corrida. | HTTP GET a [API Socrata](https://www.datos.gov.co/resource/uejq-wxrr.json). |
 | Formato | `;`, `utf-8-sig`, lectura como texto. | JSON; el perfil recibe los valores como texto. |
 | Granularidad | Vivienda y hogar. | Municipio × código de cultivo × período. |
 | Claves | `DIRECTORIO`, `ORDEN`; departamento `P1_DEPARTAMENTO`. | `c_digo_dane_departamento`, `c_digo_dane_municipio`, `c_digo_del_cultivo`, `periodo`. |
@@ -158,7 +158,7 @@ A1 se describía como igualdad a 32, pero el código exige un **mínimo** de 32.
 | C10, C14, C15 | Unicidad, `ExpectTableRowCountToEqual`, intervalos. | Preparados, compuerta 3. | R1–R7 | [Compuertas](src/calidad/compuertas.py). |
 | C11–C13, C16, A3 | Intervalos y conjuntos sobre métricas/columnas derivadas. | Preparados, compuerta 3. | Según sección 9. | [Compuertas](src/calidad/compuertas.py). |
 
-Cada resultado registra regla, severidad, tabla, expectativa, éxito, métricas y ejemplos en `calidad/compuerta_N.json`. Estados: `aprobada`, `aprobada_con_advertencias` o `rechazada`. Una crítica lanza `ErrorCalidadCritica`; una advertencia no bloquea. Existe código de pruebas, pero no se localizaron reportes ejecutados de las compuertas.
+Cada resultado registra regla, severidad, tabla, expectativa, éxito, métricas y ejemplos en `calidad/compuerta_N.json`. Estados: `aprobada`, `aprobada_con_advertencias` o `rechazada`. Una crítica lanza `ErrorCalidadCritica`; una advertencia no bloquea. Las tres compuertas se ejecutaron en las corridas de la sección 18 (capturas); los JSON de cada lote no se conservan en el repositorio.
 
 ## 11. Validación cruda de ambas fuentes
 
@@ -384,7 +384,7 @@ La prueba C7 se activa mediante el [extractor EVA](src/eva/extract.py); la prueb
 | Carga idempotente | Reemplazo completo en transacción; repetir el mismo modelo no acumula filas. Una extracción nueva puede producir datos diferentes. |
 | Fallo parcial | Rollback conserva carga anterior; si falla el informe después del commit, repetir reemplaza nuevamente el modelo. |
 | Concurrencia | Una corrida activa; sin política adicional para cargas externas concurrentes. |
-| Prueba C | [Código](tests/test_carga.py) compara conteos y huellas de 11 tablas tras dos cargas. Falta reporte ejecutado conservado. |
+| Prueba C | [Código](tests/test_carga.py) compara conteos y huellas de 11 tablas tras dos cargas. Pasó en la ejecución local del 21 de octubre de 2026 (`pytest -m warehouse`: conteos y huellas idénticas tras recargar); falta conservar la evidencia de repetirla en Airflow con el mismo `run_id`. |
 | Retención | Sin limpieza automática de lotes. |
 
 ## 21. Tablero y productos analíticos
@@ -405,7 +405,7 @@ Los filtros previstos son departamento, combinación de servicios, quintil, seve
 
 ## 22. Trazabilidad de requisitos, indicadores y proceso completo
 
-«Sin reporte» indica código existente sin ejecución preservada que cierre la trazabilidad.
+«Sin reporte» indica que no se conservan el reporte JSON de calidad ni la comparación de huellas del lote; la ejecución normal sí tiene captura (sección 18, prueba 1).
 
 | Requisito | Objetivo | Indicador o aceptación | Fuente | Regla de calidad | Transformación | Tabla del almacén | Tarea Airflow | Evidencia |
 |---|---|---|---|---|---|---|---|---|
@@ -489,7 +489,7 @@ docker compose down
 
 Integración requiere `data/profiling/eva_2024_2025.json`, generado por [el notebook EVA](notebooks/01_profiling_eva.ipynb); si faltan esa copia o los CSV, se omiten pruebas. El notebook ECV de comparación requiere resultados de la primera entrega; el DAG no. Los módulos no cargan `.env` automáticamente fuera de Compose. `docker compose down` conserva los volúmenes.
 
-**Comprobado en esta revisión:** `docker compose config --quiet` pasó. Servicios detenidos; no se iniciaron corridas ni cargas. `python -m pytest --version` informó que `pytest` no estaba instalado; la suite no se presenta como aprobada.
+**Última verificación (21 de octubre de 2026):** `docker compose config --quiet` pasó. La suite `pytest` tiene 20 pruebas: 18 pasan sin el almacén y las 2 que lo requieren (prueba C y vistas) pasaron contra PostgreSQL. Las corridas del DAG están en la sección 18.
 
 ## 24. Supuestos y limitaciones
 
