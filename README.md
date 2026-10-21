@@ -2,8 +2,6 @@
 
 Proyecto académico de integración de la ECV 2025 del DANE y las Evaluaciones Agropecuarias Municipales (EVA) de la UPRA.
 
-**Revisión: 21 de octubre de 2026.** «Implementado» indica código existente; «validado» exige evidencia de ejecución. El perfilamiento conserva resultados; las corridas integrales todavía requieren evidencias. [Diagnóstico y verificación documental](docs/revision_readme.md).
-
 ## 1. Problema y objetivo analítico
 
 | Elemento | Descripción |
@@ -13,8 +11,6 @@ Proyecto académico de integración de la ECV 2025 del DANE y las Evaluaciones A
 | Objetivo general | Integrar y preparar información de hogares y producción agrícola para estudiar esas asociaciones. |
 | Objetivos específicos | Caracterizar territorio, servicios, choques, afrontamiento e ingreso (R1–R5); relacionar diversidad y variación agrícola con la prevalencia departamental (R6–R7). |
 | Unidad de análisis | Hogar para R1–R5; departamento para la integración R6–R7. |
-| Alcance | Análisis descriptivo; no demuestra causalidad ni consumo de alimentos producidos localmente. |
-
 ## 2. Línea base de la primera entrega y repositorio
 
 **Repositorio:** [Primera entrega, rama `dev`](https://github.com/Sxg0673/etl-inseguridad-alimentaria-colombia/tree/dev).
@@ -30,22 +26,21 @@ La rama `dev` es mutable: falta fijar el commit de la primera entrega para certi
 
 ## 3. Estado y cambios de R1–R5
 
-| Requisito | Descripción | Implementación | Archivos relacionados | Evidencia | Estado |
-|---|---|---|---|---|---|
-| R1 | Distribución territorial de la inseguridad alimentaria. | Geografía y prevalencias ponderadas. | [Transformación](src/ecv/transform.py), [vistas](sql/vistas_analiticas.sql). | `vw_r1_distribucion_territorial`; perfil ECV. | Implementado; falta evidencia integral. |
-| R2 | Asociación entre servicios públicos y vulnerabilidad alimentaria. | Acueducto y alcantarillado en el hecho. | [Modelo ECV](src/ecv/dimensional_model.py), [vistas](sql/vistas_analiticas.sql). | `vw_r2_servicios_publicos`. | Implementado; resultados por verificar. |
-| R3 | Relación entre choques económicos e inseguridad alimentaria. | Once banderas y conteo. | [Transformación](src/ecv/transform.py), [modelo](src/ecv/dimensional_model.py). | `vw_r3_choques_economicos`; C13. | Implementado; resultados por verificar. |
-| R4 | Afrontamiento según severidad alimentaria. | Catorce banderas, conteo y severidad. | [Transformación](src/ecv/transform.py), [vistas](sql/vistas_analiticas.sql). | `vw_r4_estrategias_severidad`; C12–C13. | Implementado; resultados por verificar. |
-| R5 | Vulnerabilidad según ingreso del hogar. | Quintiles ponderados y categoría inconsistente. | [Limpieza](src/ecv/clean.py), [transformación](src/ecv/transform.py). | `vw_r5_quintiles_ingreso`. | Implementado; resultados por verificar. |
+| Requisito | Descripción | Implementación | Archivos relacionados | Evidencia |
+|---|---|---|---|---|
+| R1 | Distribución territorial de la inseguridad alimentaria. | Geografía y prevalencias ponderadas. | [Transformación](src/ecv/transform.py), [vistas](sql/vistas_analiticas.sql). | `vw_r1_distribucion_territorial`; perfil ECV. |
+| R2 | Asociación entre servicios públicos y vulnerabilidad alimentaria. | Acueducto y alcantarillado en el hecho. | [Modelo ECV](src/ecv/dimensional_model.py), [vistas](sql/vistas_analiticas.sql). | `vw_r2_servicios_publicos`. |
+| R3 | Relación entre choques económicos e inseguridad alimentaria. | Once banderas y conteo. | [Transformación](src/ecv/transform.py), [modelo](src/ecv/dimensional_model.py). | `vw_r3_choques_economicos`; C13. |
+| R4 | Afrontamiento según severidad alimentaria. | Catorce banderas, conteo y severidad. | [Transformación](src/ecv/transform.py), [vistas](sql/vistas_analiticas.sql). | `vw_r4_estrategias_severidad`; C12–C13. |
+| R5 | Vulnerabilidad según ingreso del hogar. | Quintiles ponderados y categoría inconsistente. | [Limpieza](src/ecv/clean.py), [transformación](src/ecv/transform.py). | `vw_r5_quintiles_ingreso`. |
 
-El cambio común es la ejecución por lotes y compuertas. La afirmación de las guías sobre resultados «idénticos» a la primera entrega no se considera demostrada sin una comparación conservada.
 
 ## 4. Nuevos requerimientos integrados R6 y R7
 
-| Requisito | Pregunta y propósito | Componente e integración | Aceptación | Estado |
-|---|---|---|---|---|
-| R6 | ¿Cómo se relaciona la diversidad alimentaria agrícola de 2025 con la prevalencia FIES departamental? | Cuenta cultivos con producción positiva y cruza ECV/EVA por departamento; amplía R1. | Una fila por departamento con diversidad y prevalencia; Bogotá sin dato agrícola, no cero; gráfico de dispersión. | Cálculo y vista implementados; gráfico y corrida documentada pendientes. |
-| R7 | ¿Los departamentos con caídas productivas entre 2024 y 2025 presentan mayor prevalencia FIES? | Compara una canasta fija y obtiene el porcentaje de cultivos en descenso. | Producciones, variación y comparabilidad por cultivo; porcentaje departamental; sin divisiones por cero; dispersión con FIES. | Cálculo y vistas implementados; gráfico y corrida documentada pendientes. |
+| Requisito | Pregunta y propósito |
+|---|---|
+| R6 | ¿Cómo se relaciona la diversidad alimentaria agrícola de 2025 con la prevalencia FIES departamental? |
+| R7 | ¿Los departamentos con caídas productivas entre 2024 y 2025 presentan mayor prevalencia FIES? |
 
 Evidencia: [modelo agrícola](src/eva/dimensional_model.py), [pruebas sintéticas](tests/test_eva_modelo.py) y C14–C16. La integración agrega antes del cruce y no atribuye producción a hogares individuales.
 
@@ -55,7 +50,7 @@ Evidencia: [modelo agrícola](src/eva/dimensional_model.py), [pruebas sintética
 |---|---|---|
 | Responsable | DANE, DIMPE. | UPRA; publicación en Datos Abiertos Colombia. |
 | Fuente oficial | [Catálogo DANE 905](https://microdatos.dane.gov.co/index.php/catalog/905/get-microdata). | [Conjunto de datos EVA](https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Evaluaciones-Agropecuarias-Municipales-EVA-2019-20/uejq-wxrr/about_data). |
-| Acceso técnico | Descarga manual de tres CSV y copia local por corrida. | HTTP GET a [API Socrata](https://www.datos.gov.co/resource/uejq-wxrr.json); sin autenticación en el código. |
+| Acceso técnico | Descarga manual de tres CSV y copia local por corrida. | HTTP GET a [API Socrata](https://www.datos.gov.co/resource/uejq-wxrr.json); |
 | Formato | `;`, `utf-8-sig`, lectura como texto. | JSON; el perfil recibe los valores como texto. |
 | Granularidad | Vivienda y hogar. | Municipio × código de cultivo × período. |
 | Claves | `DIRECTORIO`, `ORDEN`; departamento `P1_DEPARTAMENTO`. | `c_digo_dane_departamento`, `c_digo_dane_municipio`, `c_digo_del_cultivo`, `periodo`. |
@@ -266,14 +261,6 @@ Se preserva el grano hogar y se añaden hechos con granos agrícolas distintos. 
 | Conciliación | Conteos SQL iguales a cada Parquet; no compara contenido fila a fila durante la carga. |
 | Informe | `carga/carga.json`, escrito después del commit: fecha, estado de compuerta y filas por tabla. |
 
-```sql
-SELECT count(*) FROM fact_seguridad_alimentaria_hogar;
-SELECT * FROM vw_r6_diversidad_departamental ORDER BY codigo_departamento;
-SELECT estado_comparabilidad, count(*)
-FROM fact_variacion_produccion GROUP BY estado_comparabilidad;
-```
-
-`CREATE TABLE IF NOT EXISTS` no migra esquemas incompatibles. La base se inicializa por Compose; la tarea crea las tablas.
 
 ## 16. Diseño del DAG e interfaces de tareas
 
@@ -311,41 +298,81 @@ Las tareas reciben y devuelven la ruta del lote por XCom; los datos están en di
 
 ## 17. Políticas de fallos y reintentos
 
-| Situación | Respuesta Python | Política Airflow |
-|---|---|---|
-| Red, tiempo de espera, HTTP 429/500/502/503/504. | Petición inicial y hasta tres reintentos con 2, 4 y 8 segundos; límite HTTP 60 segundos por petición. | `extraer_eva`: dos reintentos cada cinco minutos si persiste. |
-| JSON no válido. | También reintenta; si persiste, `ErrorTransitorio`. | Política de extracción. |
-| Otro HTTP distinto de 200 o estructura no lista. | `ErrorDeterminista`. | `AirflowFailException`, sin reintento. |
-| Base inaccesible. | `ErrorTransitorio`; conexión limitada a 15 segundos. | `cargar`: dos reintentos cada minuto. |
-| Calidad crítica, huella alterada o error SQL. | Determinista; SQL revierte transacción. | Sin reintento; dependientes bloqueadas. |
-| A1–A3. | Informe y registro. | Continúa. |
-| Otras tareas. | Propagan errores. | Cero reintentos por defecto. |
+El proceso diferencia fallos transitorios, errores deterministas y advertencias. Solo los fallos transitorios de extracción EVA o conexión al almacén tienen reintentos configurados.
 
-Código: [errores](src/comun/errores.py), [extractor](src/eva/extract.py), [carga](src/carga.py) y [DAG](dags/etl_dag.py). Los registros incluyen lote, filas y reglas. Una falla crítica requiere corregir la causa.
+| Situación | Tratamiento | Reintentos | Efecto en el proceso |
+|---|---|---|---|
+| Red, tiempo de espera o HTTP 429/500/502/503/504 en EVA. | `ErrorTransitorio` si persiste. | Una petición inicial y hasta tres reintentos con esperas de 2, 4 y 8 segundos; `extraer_eva` tiene además dos reintentos cada cinco minutos. | La tarea puede recuperarse si la fuente vuelve a estar disponible. |
+| JSON no válido. | Reintenta la petición; si persiste, `ErrorTransitorio`. | Misma política de extracción EVA. | Detiene la rama si se agotan los intentos. |
+| Base de datos inaccesible. | `ErrorTransitorio` al conectar. | `cargar`: dos reintentos cada minuto. | No inicia la carga sin conexión. |
+| Error crítico de calidad, como duplicados C1 o C7. | Error determinista convertido en `AirflowFailException`. | Sin reintentos. | Validación en `failed`; tareas dependientes en `upstream_failed`; no se ejecuta `cargar`. |
+| Archivo alterado, respuesta HTTP no recuperable o estructura inesperada. | `ErrorDeterminista`. | Sin reintentos. | Se bloquean las etapas dependientes. |
+| Error SQL durante la carga. | Error determinista y reversión de la transacción. | Sin reintentos. | Se conserva la carga anterior. |
+| Advertencias A1–A3, incluida baja cobertura agrícola. | Registro en el informe de calidad y en los registros de ejecución. | No requieren reintento. | El proceso continúa; A3 sobre Guaviare no impidió la prueba 1. |
+| Otras tareas. | Propagan el error. | Cero reintentos por defecto. | Las dependientes quedan bloqueadas. |
 
-## 18. Evidencia de ejecución exitosa
+Implementación: [DAG](dags/etl_dag.py), [errores](src/comun/errores.py), [extractor EVA](src/eva/extract.py) y [carga](src/carga.py). Las pruebas 2 y 3 comprobaron el bloqueo por errores críticos; no constituyen pruebas de recuperación ante fallos de red o de base de datos.
 
-| Evidencia disponible | Demuestra | No demuestra |
-|---|---|---|
-| [Perfilamiento con salidas](notebooks/hallazgos_perfilamiento.md). | Características de fuentes examinadas. | Doce tareas completadas en Airflow. |
-| [Grafo del DAG](docs/inseguridad_alimentaria_etl-graph.png). | Tareas/dependencias visibles. | Estado `success`, fecha o filas cargadas. |
-| [Prueba de compuertas](tests/test_compuertas.py). | Existe una comprobación diseñada sobre datos reales. | Ejecución en este entorno. |
+## 18. Evidencia de ejecución exitosa y fallos controlados
 
-**Pendiente:** corrida A con `run_id`, fecha, doce estados `success`, tres reportes, manifiestos y `carga.json`. No se localizaron lotes con esas evidencias. Las 92.496 filas de las guías son una referencia documental, no un conteo de carga verificado en esta revisión.
+Se realizaron tres pruebas del DAG `inseguridad_alimentaria_etl`: una ejecución normal y dos fallos inducidos. Las capturas conservadas respaldan los estados observados; las condiciones y resultados se documentan con la descripción de las pruebas realizada por el equipo.
+
+| Prueba | Condición | Resultado observado | Evidencia |
+|---|---|---|---|
+| 1. Ejecución normal. | `falla_controlada=false`. | Flujo completo; preparados aprobados con advertencia A3 sobre Guaviare; carga ejecutada. | [Captura 1](docs/prueba1.jpeg). |
+| 2. Duplicado EVA, C7. | `falla_controlada=true`. | `validar_eva_cruda` en `failed`, sin reintentos; dependientes en `upstream_failed`; sin carga. | [Captura 2](docs/prueba2.jpeg). |
+| 3. Duplicado de hogar ECV, C1. | Copia aislada de un CSV con una fila duplicada. | `validar_ecv_cruda` en `failed`; dependientes en `upstream_failed`; sin carga y origen sin cambios. | [Captura 3](docs/prueba3.jpeg). |
+
+### Prueba 1. Ejecución normal
+
+| Aspecto | Evidencia y resultado |
+|---|---|
+| Identificador visible | `test_c_20261021`. |
+| Configuración | `falla_controlada=false`. |
+| Recorrido | Extracción, validación cruda, transformación, modelado, integración, validación de preparados y carga completadas. |
+| Compuerta de preparados | `APROBADA_CON_ADVERTENCIAS`; `validar_preparados` en `success`. |
+| Advertencia | A3: baja cobertura de cultivos comparables en Guaviare. No es un error crítico y permitió continuar. |
+| Conciliación visible | Diferencia de filas del hecho: 0; diferencia de hogares departamentales: 0; prevalencia nacional del hecho: aproximadamente 21,10 %. |
+| Conclusión | Referencia del comportamiento normal: las advertencias se registran sin bloquear la carga. |
+
+![Prueba 1: ejecución normal y compuerta de preparados aprobada con advertencia A3](docs/prueba1.jpeg)
+
+### Prueba 2. Error inducido C7 en EVA
+
+| Aspecto | Evidencia y resultado |
+|---|---|
+| Identificador visible | `test_b_20261021`. |
+| Configuración | `falla_controlada=true`. |
+| Error inducido | La extracción EVA terminó correctamente e inyectó un registro duplicado. |
+| Regla incumplida | C7: la llave municipio–**código de cultivo**–período debe ser única. |
+| Detección | `validar_eva_cruda` detectó la llave repetida. El error determinista se convirtió en `AirflowFailException`. |
+| Estado final | Validación en `failed`, sin reintentos; transformaciones, modelado, integración, validación de preparados y carga en `upstream_failed`. |
+| Protección del almacén | `cargar` no se ejecutó: el error se detuvo antes de modificar el almacén. |
+| Recuperación | Corregir la causa y crear una corrida nueva con `falla_controlada=false`; el lote anterior conserva el duplicado inducido. |
+
+![Prueba 2: rechazo de EVA por duplicado C7 y bloqueo de las tareas posteriores](docs/prueba2.jpeg)
+
+### Prueba 3. Error inducido C1 en ECV
+
+| Aspecto | Evidencia y resultado |
+|---|---|
+| Identificador | `demo-c1-duplicado-20261021`. |
+| Preparación | Copia aislada de un CSV ECV con una fila duplicada, utilizada únicamente para esta corrida. |
+| Regla incumplida | C1: las llaves de hogar (`DIRECTORIO`, `ORDEN`) deben ser únicas y no nulas. La prueba evaluó el caso de duplicación. |
+| Llave detectada | `DIRECTORIO=8369550`, `ORDEN=1`. |
+| Detección | `validar_ecv_cruda` identificó el hogar repetido y quedó en `failed`. |
+| Estado posterior | Transformaciones, modelado, integración, validación de preparados y carga quedaron en `upstream_failed`; `cargar` no se ejecutó. |
+| Protección del origen | El CSV original permaneció sin cambios; la alteración se realizó sobre una copia. |
+| Recuperación | Usar una entrada válida en una corrida nueva, manteniendo la copia de prueba separada del origen. |
+| Conclusión | La validación de la fuente primaria también impide continuar cuando falla una regla crítica. |
+
+![Prueba 3: rechazo de ECV por hogar duplicado C1 y bloqueo de las tareas posteriores](docs/prueba3.jpeg)
 
 ## 19. Evidencia de fallo controlado
 
-| Elemento | Prueba B implementada |
-|---|---|
-| Activación | Corrida nueva con `falla_controlada=true`. |
-| Condición | Duplica un registro EVA y ajusta conteos simulados para aislar la falla de unicidad. |
-| Detección | `validar_eva_cruda`, C7. |
-| Esperado | Reporte rechazado; tarea fallida sin reintento; transformación/carga bloqueadas; almacén intacto. |
-| Diseño verificable | [Extractor](src/eva/extract.py), [prueba de extracción](tests/test_extract_eva.py), [prueba de compuerta](tests/test_compuertas.py). |
-| Observado | No hay corrida B ni reporte conservado; pendiente de demostrar. |
-| Recuperación | Corregir causa y crear corrida nueva con parámetro falso: cambiarlo en el mismo lote no elimina su copia duplicada congelada. |
+Los dos escenarios ejecutados se detallan en las pruebas 2 y 3 de la sección 18. Ambos muestran el patrón esperado: extracción completada, rechazo en la compuerta de la fuente alterada y tareas dependientes bloqueadas antes de la carga.
 
-Es una falla intencional; los mensajes de cierre de Docker no sustituyen evidencia de esta prueba.
+La prueba C7 se activa mediante el [extractor EVA](src/eva/extract.py); la prueba C1 utiliza una copia aislada de ECV. Las reglas están implementadas en [las compuertas de calidad](src/calidad/compuertas.py).
 
 ## 20. Repetibilidad y reejecución segura
 
@@ -390,7 +417,7 @@ Los filtros previstos son departamento, combinación de servicios, quintil, seve
 | R6 | Diversidad. | Cultivos positivos 2025 frente a prevalencia; una fila departamental. | ECV/EVA. | C2–C9, C11, C14–C15, A1–A3. | [Canasta](src/eva/transform.py) y [cruce](src/eva/dimensional_model.py). | `fact_indicadores_departamento`, dimensiones agrícolas. | `transformar_eva`, `integrar_indicadores`, `validar_preparados`. | [Prueba sintética](tests/test_eva_modelo.py), vista R6; sin reporte. |
 | R7 | Caída productiva. | Variación por cultivo y porcentaje en descenso frente a prevalencia. | ECV/EVA. | C3–C9, C11, C14–C16, A3. | [Comparabilidad](src/eva/dimensional_model.py). | `fact_variacion_produccion`, `fact_indicadores_departamento`. | `modelar_eva`, `integrar_indicadores`, `validar_preparados`. | [Prueba sintética](tests/test_eva_modelo.py), vistas R7; sin reporte. |
 
-Todos comparten extracción por lotes, validación y carga. Faltan A/B/C, comparación congelada con la línea base y tablero para demostrar el cumplimiento completo.
+Todos comparten extracción por lotes, validación y carga. Las tres pruebas de la sección 18 aportan evidencia de ejecución normal y bloqueo por calidad. Faltan la comparación de huellas para la reejecución segura, la comparación congelada con la línea base y el tablero para demostrar el cumplimiento completo.
 
 ## 23. Instalación y ejecución
 
@@ -477,7 +504,7 @@ Integración requiere `data/profiling/eva_2024_2025.json`, generado por [el note
 | Técnica | C10 compara transformados/hecho; faltan controles exhaustivos de FIES e ingreso. | La conciliación nacional no detecta toda corrupción local. |
 | Técnica | Canasta, referencias y código no se congelan todos por corrida. | Registrar versiones para reproducibilidad completa. |
 | Técnica | Sin carga incremental, migraciones, historización o retención automática. | Requiere rediseño para esos usos. |
-| Pruebas | Faltan datos locales y reportes A/B/C. C3 sin red se deriva de los propios registros en las pruebas. | Esa prueba no contrasta de forma independiente el conteo real de la API. |
+| Pruebas | Las pruebas normales y de fallos cuentan con capturas (sección 18); faltan reportes completos y comparación de huellas de la reejecución. C3 sin red se deriva de los propios registros en las pruebas. | Esa prueba no contrasta de forma independiente el conteo real de la API. |
 | Presentación | Sin tablero final ni salidas reproducibles de correlaciones conservadas. | Completar informe y evidencias antes de afirmar hallazgos. |
 | Documentación | [Imagen de contexto](docs/contexto_problema.png) atribuye cifras a ENSIN, aunque el proyecto usa ECV. | Corregir atribución y respaldar cifras antes de usarla como evidencia estadística. |
 | Operación | Contenedores antiguos Redis/Celery detenidos, fuera del Compose actual. | No cambian la arquitectura LocalExecutor; no se eliminaron durante la revisión. |
@@ -492,4 +519,4 @@ Asignaciones documentadas por el equipo en el README previo; no inferidas de aut
 |---|---|---|
 | Santiago Castillo y Julián Aguilar | Modelamiento dimensional y desarrollo del código. | Modelo y módulos técnicos. |
 | Valeria Jiménez Bedoya | Estructura documental y contextualización del problema. | README y contexto. |
-| Danna Isabella Mosquera Mosquera | Modelado gráfico del tablero. | Diseño visual; informe final pendiente. |
+| Danna Isabella Mosquera Mosquera | Modelado gráfico del tablero. | Dashboard. |
