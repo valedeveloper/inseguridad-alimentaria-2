@@ -266,28 +266,31 @@ Regla **descartada**: "área cosechada ≤ área sembrada". La definición ofici
 |---|---|
 | Extracción API | Paginar con `$order=:id`, `$limit`/`$offset`; conciliar contra `count(*)`; guardar la respuesta cruda con su fecha de extracción (la UPRA puede revisar 2024 y 2025). |
 | Extracción API | Errores de red o 5xx son transitorios (reintento acotado). Respuesta vacía, esquema distinto o conteo que no concilia son deterministas (sin reintento). |
-| Transformación EVA | Convertir texto a número (punto decimal); agregar municipio y período a departamento × cultivo × año; tratar "Plantas aromáticas" para no contar doble. |
+| Transformación EVA | Convertir texto a número (punto decimal); agregar municipio y período a departamento × cultivo × año. "Plantas aromáticas" queda fuera de la canasta, así que no hay doble conteo de períodos. |
 | Transformación ECV | `zfill(2)` al departamento; coma decimal; `FEX_C` de la tabla de hogar; excluir los 718 sin FIES del denominador. |
 | Integración | Unir por código de departamento; Bogotá con indicadores agrícolas nulos. |
-| Modelo | Grano EVA de análisis: departamento × cultivo × año (insumo para la decisión D4). |
+| Modelo | Grano EVA de análisis: departamento × cultivo × año (`fact_produccion_agricola` en `docs/modelo_dimensional.dbml`). |
 
-## 17. Decisiones pendientes del equipo
+## 17. Decisiones tomadas
 
-| # | Decisión | Evidencia |
-|---|---|---|
-| 1 | Canasta de cultivos alimentarios: qué grupos y cultivos entran (caña de azúcar, café, cacao, palma, no alimentarios, medicinales) | Sección 12 |
-| 2 | Desagregaciones de exportación e industria (banano, plátano, yuca industrial, caña de azúcar): ¿entran? | Sección 12 |
-| 3 | Nivel de comparación: por cultivo (160) o por código (187) | Secciones 5 y 11 |
-| 4 | Unificar `Stevia`/`Estevia` y `Albahaca`/`Chiraran - albahaca` | Sección 5 |
-| 5 | "Plantas aromáticas" con período anual y semestral a la vez | Sección 7 |
-| 6 | Cómo reportar en R7 los valores repetidos entre años | Sección 8 |
-| 7 | Cobertura mínima para incluir un departamento en R6/R7 (Amazonía/Orinoquía, San Andrés) | Sección 10 |
+Las decisiones que este perfilamiento dejó abiertas se cerraron así:
+
+| # | Decisión | Resolución | Dónde quedó |
+|---|---|---|---|
+| 1 | Canasta de cultivos alimentarios | No existe una clasificación oficial (UPRA, FAO y DANE revisadas). Se adopta un criterio propio: entra el cultivo cuyo producto principal es alimento humano directo. **116 de 160 cultivos.** | `config/canasta_cultivos.csv`; `docs/reglas_calidad.md` §6 |
+| 2 | Desagregaciones de exportación e industria | Banano, plátano y yuca quedan dentro de su cultivo. La caña se excluye completa (no se puede separar la panela). | `config/canasta_cultivos.csv` |
+| 3 | Nivel de comparación | **Por cultivo (160)**, no por código de desagregación. | Reglas C9, C14 y C16; `dim_cultivo` |
+| 4 | `Stevia`/`Estevia` y `Albahaca`/`Chiraran - albahaca` | Sin efecto: el grupo de medicinales y aromáticas queda fuera de la canasta. | `config/canasta_cultivos.csv` |
+| 5 | "Plantas aromáticas" con período anual y semestral | Fuera de la canasta; el doble conteo desaparece. | `docs/reglas_calidad.md` §8 |
+| 6 | Valores repetidos entre 2024 y 2025 | Se reportan como limitación de R7 en el README, sin regla de calidad. | `docs/reglas_calidad.md` §8 |
+| 7 | Cobertura mínima | Se incluyen todos los departamentos; se marcan los de menos de 10 cultivos comparables. | Regla A3; `fact_indicadores_departamento.baja_cobertura` |
+| — | Bogotá sin datos en EVA | Indicadores agrícolas nulos ("sin dato"), nunca 0. | Regla C15 |
 
 ## 18. Reproducción
 
-1. Crear `.env` a partir de `.env.example` y definir `ECV_RAW_DIR` con la carpeta de los CSV de la ECV (ver `data/raw/README.md` de la Primera Entrega para la descarga).
-2. Clonar el repositorio de la Primera Entrega (rama `dev`) en la misma carpeta que este. Por ahora los notebooks leen de allí `data/reference/divipola_departamentos.csv` y `results/R1_distribucion_territorial.csv`; dejará de ser necesario cuando esas referencias se porten a este repositorio.
-3. Activar el entorno local (Python 3.13) e instalar dependencias.
+1. Descargar los tres CSV de la ECV y colocarlos en `data/raw/ecv/` (instrucciones en `data/raw/README.md`). DIVIPOLA ya está en `data/reference/`.
+2. Clonar el repositorio de la Primera Entrega (rama `dev`) en la misma carpeta que este. Solo el notebook 02 lo usa, para leer `results/R1_distribucion_territorial.csv` y contrastar con R1.
+3. Crear el entorno local (Python 3.13) e instalar `requirements.txt`.
 4. Ejecutar `01_profiling_eva.ipynb` (consulta la API y guarda una copia en `data/incoming/profiling/`; con `FORZAR_EXTRACCION = True` vuelve a consultar).
 5. Ejecutar `02_profiling_ecv_departamental.ipynb`.
 

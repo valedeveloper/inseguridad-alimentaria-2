@@ -10,3 +10,4 @@ data/batches/*
 !data/batches/.gitkeep
 data/raw/ecv/*
 !data/raw/ecv/.gitkeep
+docs/*.dbdiagram

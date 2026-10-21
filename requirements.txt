@@ -1,3 +1,8 @@
-numpy>=1.26,<2
+numpy>=1.26
 pandas>=2.2,<3
-ydata-profiling>=4.16,<5
+pyarrow>=18
+requests>=2.32
+great-expectations==1.23.1
+psycopg2-binary>=2.9
+python-dotenv>=1.0
+ipykernel
