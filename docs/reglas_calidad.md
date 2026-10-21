@@ -57,20 +57,20 @@ No hay reglas informativas: las limitaciones observadas (valores repetidos entre
 | C14 | R6, R7 | La agregación pierde o duplica producción. | Producción total antes y después de agregar a departamento × cultivo × año (nivel cultivo, no código de desagregación); llave del agregado única. | Diferencia 0; 0 duplicados | Crítica | H2 §11: producción conservada |
 | C15 | R6 | Un departamento repetido o un faltante convertido en 0 sesga la asociación. | Una fila por departamento (33); Bogotá con diversidad nula, no 0. | 33 filas únicas; 0 ceros imputados | Crítica | H2 §14 |
 | C16 | R7 | Divisiones por cero o casos no comparables registrados como caídas. | Variación solo con base 2024 > 0; casos no calculables con estado explícito; % en descenso entre 0 y 100 y cultivos en descenso ≤ comparables. | 0 infinitos o NaN sin marca; 100 % en rango | Crítica | H2 §11: 43 bases 0, 34 solo 2024, 24 solo 2025 |
-| A3 | R6, R7 | Resultados de departamentos con poca información agrícola se interpretan como robustos. | Departamentos con menos de N cultivos comparables. | N = 10 | Advertencia | H2 §10: Guaviare, Guainía, Vaupés, San Andrés |
+| A3 | R6, R7 | Resultados de departamentos con poca información agrícola se interpretan como robustos. | Departamentos con menos de N cultivos comparables. | N = 15 | Advertencia | H2 §10: Guaviare, Guainía, Vaupés, San Andrés |
 
 ## 6. Canasta de cultivos alimentarios
 
-R6 y R7 usan una canasta fija de cultivos, definida en [`config/canasta_cultivos.csv`](../config/canasta_cultivos.csv) (160 cultivos de EVA; columna `incluido`, con el motivo de cada uno). El pipeline la lee; cambiarla no requiere tocar código.
+R6 y R7 usan una canasta fija de cultivos, definida en [`config/canasta_cultivos.csv`](../config/canasta_cultivos.csv): los 160 cultivos de EVA con `incluido`, el código P3204 que les corresponde y el motivo. El pipeline la lee; cambiarla no requiere tocar código.
 
 | Elemento | Definición |
 |---|---|
-| Base | No existe una clasificación oficial que separe cultivos alimentarios de no alimentarios: la metodología EVA de la UPRA no la define, y las clasificaciones de la FAO (CPC, ICC) y la COICOP del DANE no aplican directamente. Se adopta un **criterio propio del proyecto**. |
-| Criterio | Entra el cultivo cuyo producto principal es **alimento humano de consumo directo**. No entran: industria, bebida, fibra, aceite, alimento animal, medicinal, ornamental, especia ni categorías residuales. |
+| Base oficial | La pregunta **P3204** de la propia ECV 2025 (capítulo M): *"¿Cuáles de los siguientes alimentos compró el hogar o adquirió sin pago durante los últimos 7 días?"*, con 25 grupos de alimentos (catálogo en el diccionario DANE de la ECV). Es la definición de alimento de la misma encuesta de la que sale la prevalencia FIES. |
+| Criterio | Entra el cultivo de EVA cuyo producto corresponde a un grupo de alimentos de P3204. |
 | Nivel | Por cultivo (160), no por código de desagregación (187). |
-| Resultado | **116 incluidos** (63 frutales, 30 hortalizas, 9 raíces y tubérculos, 8 leguminosas, 6 cereales); 44 excluidos. |
-| Exclusiones puntuales | Caña (incluye panela, pero domina la caña de azúcar industrial y no se separa por cultivo); sorgo y cebada (destino mayoritario no humano); condimentos; todas las oleaginosas; cúrcuma; "Otros frutales", "Otras hortalizas" y "Otras raíces y tubérculos" (residuales: su composición puede cambiar entre años y rompe la canasta fija). |
-| Excepción declarada | Maíz se conserva: parte es maíz amarillo para alimento animal, pero es base de la dieta y los tipos no se separan al comparar por cultivo. |
+| Resultado | **139 incluidos**, 21 excluidos. Por grupo P3204: frutas (13) 64, verduras (17) 30, condimentos (23) 10, papas/yuca/arracacha/ñame (16) 9, café/chocolate/té/aromáticas (24) 8, aceites (12) 5, granos secos (14) 5, cereales y derivados (02) 3, maní y frutos secos (21) 2, arroz (01), plátano (15) y panela (19, caña) 1 cada uno. |
+| Excluidos | Sin alimento en P3204: algodón, fique, iraca, tabaco, sorgo, millo y cebada. Medicinales u ornamentales según EVA: sábila, ruda, ruscus, romero, moringa, stevia y estevia. Categorías residuales o genéricas ("Otros frutales", "Otras hortalizas", "Otras raíces y tubérculos", "Otros cultivos tropicales…", "Otros cultivos para condimentos…", "Plantas aromáticas"): su composición puede cambiar entre años y rompe la canasta fija. "Chiraran - albahaca": misma especie que Albahaca, se cuenta una sola vez. |
+| Excepciones declaradas | Maíz, soya y palma se incluyen aunque parte de su producción se destine a alimento animal o industria (no separable por cultivo). Caña se incluye por la panela (19) y el azúcar y la miel (18). Quinua se asigna a "otros granos" (14), que P3204 no nombra explícitamente. |
 
 ## 7. Prueba de falla controlada (test B)
 

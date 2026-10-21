@@ -277,13 +277,13 @@ Las decisiones que este perfilamiento dejó abiertas se cerraron así:
 
 | # | Decisión | Resolución | Dónde quedó |
 |---|---|---|---|
-| 1 | Canasta de cultivos alimentarios | No existe una clasificación oficial (UPRA, FAO y DANE revisadas). Se adopta un criterio propio: entra el cultivo cuyo producto principal es alimento humano directo. **116 de 160 cultivos.** | `config/canasta_cultivos.csv`; `docs/reglas_calidad.md` §6 |
-| 2 | Desagregaciones de exportación e industria | Banano, plátano y yuca quedan dentro de su cultivo. La caña se excluye completa (no se puede separar la panela). | `config/canasta_cultivos.csv` |
+| 1 | Canasta de cultivos alimentarios | UPRA, FAO y la COICOP del DANE no separan cultivos alimentarios. Se ancla en la lista oficial de alimentos de la propia ECV 2025 (pregunta **P3204**): entra el cultivo cuyo producto corresponde a un alimento de esa lista. **139 de 160 cultivos.** | `config/canasta_cultivos.csv`; `docs/reglas_calidad.md` §6 |
+| 2 | Desagregaciones de exportación e industria | Banano, plátano y yuca quedan dentro de su cultivo. La caña entra completa: panela, azúcar y miel son alimentos de P3204. | `config/canasta_cultivos.csv` |
 | 3 | Nivel de comparación | **Por cultivo (160)**, no por código de desagregación. | Reglas C9, C14 y C16; `dim_cultivo` |
-| 4 | `Stevia`/`Estevia` y `Albahaca`/`Chiraran - albahaca` | Sin efecto: el grupo de medicinales y aromáticas queda fuera de la canasta. | `config/canasta_cultivos.csv` |
-| 5 | "Plantas aromáticas" con período anual y semestral | Fuera de la canasta; el doble conteo desaparece. | `docs/reglas_calidad.md` §8 |
+| 4 | `Stevia`/`Estevia` y `Albahaca`/`Chiraran - albahaca` | Stevia y Estevia quedan fuera (medicinales según EVA). Albahaca entra; "Chiraran - albahaca" se excluye para no contar dos veces la misma especie. | `config/canasta_cultivos.csv` |
+| 5 | "Plantas aromáticas" con período anual y semestral | Fuera de la canasta por ser una categoría genérica; el doble conteo no afecta R6 ni R7. | `docs/reglas_calidad.md` §8 |
 | 6 | Valores repetidos entre 2024 y 2025 | Se reportan como limitación de R7 en el README, sin regla de calidad. | `docs/reglas_calidad.md` §8 |
-| 7 | Cobertura mínima | Se incluyen todos los departamentos; se marcan los de menos de 10 cultivos comparables. | Regla A3; `fact_indicadores_departamento.baja_cobertura` |
+| 7 | Cobertura mínima | Se incluyen todos los departamentos; se marcan los de menos de 15 cultivos comparables. | Regla A3; `fact_indicadores_departamento.baja_cobertura` |
 | — | Bogotá sin datos en EVA | Indicadores agrícolas nulos ("sin dato"), nunca 0. | Regla C15 |
 
 ## 18. Reproducción

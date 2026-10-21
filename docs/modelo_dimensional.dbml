@@ -120,7 +120,7 @@ Table dim_cultivo {
   estado_fisico text [not null]
   en_canasta boolean [not null, note: 'Desde config/canasta_cultivos.csv']
   motivo_canasta text [not null]
-  Note: 'Grano: un cultivo de EVA (160 filas; 116 en la canasta)'
+  Note: 'Grano: un cultivo de EVA (160 filas; 139 en la canasta)'
 }
 
 Table fact_produccion_agricola {
@@ -170,7 +170,7 @@ Table fact_indicadores_departamento {
   cultivos_comparables integer [note: 'R7. Nulo para Bogota']
   cultivos_en_descenso integer [note: 'R7. Nulo para Bogota']
   pct_cultivos_en_descenso decimal(6,2) [note: 'R7. Nulo si no hay comparables']
-  baja_cobertura boolean [note: 'Menos de 10 cultivos comparables (regla A3)']
+  baja_cobertura boolean [note: 'Menos de 15 cultivos comparables (regla A3)']
   Note: 'Hecho consolidado (drill-across ECV + EVA). Grano: departamento, 2025 (33 filas). R6 y R7.'
 }
 

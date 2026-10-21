@@ -26,7 +26,7 @@ from src.comun.errores import ErrorDeterminista
 
 ANIO_BASE = 2024
 ANIO_COMPARACION = 2025
-UMBRAL_BAJA_COBERTURA = 10  # regla A3: menos de 10 cultivos comparables
+UMBRAL_BAJA_COBERTURA = 15  # regla A3: menos de 15 cultivos comparables
 
 
 def construir_dim_departamento(divipola):

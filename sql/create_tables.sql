@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS dim_departamento (
 
 -- ---------------------------------------------------------------------
 -- DIM_CULTIVO
--- Grano: un cultivo de EVA (160 filas; 116 en la canasta).
+-- Grano: un cultivo de EVA (160 filas; 139 en la canasta).
 -- en_canasta y motivo_canasta vienen de config/canasta_cultivos.csv.
 -- Ciclo, estado fisico, grupo y subgrupo son unicos por cultivo
 -- (verificado sobre los 51.170 registros de 2024-2025).
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS fact_variacion_produccion (
 -- FACT_INDICADORES_DEPARTAMENTO (hecho consolidado, R6 y R7)
 -- Grano: departamento, 2025 (33 filas). Une ECV y EVA (drill-across).
 -- Los indicadores agricolas son nulos para Bogota (sin dato en EVA),
--- nunca 0. baja_cobertura: menos de 10 cultivos comparables (regla A3).
+-- nunca 0. baja_cobertura: menos de 15 cultivos comparables (regla A3).
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS fact_indicadores_departamento (
     id_departamento                 INTEGER NOT NULL,
