@@ -406,10 +406,12 @@ Los filtros previstos son departamento, combinación de servicios, quintil, seve
 El tablero integra la prevalencia de inseguridad alimentaria moderada o grave de la ECV 2025 del DANE con la producción agrícola de EVA 2024–2025 de la UPRA. La prevalencia se calcula con el factor de expansión de los hogares. Los indicadores se comparan por departamento; cada punto de las dispersiones representa uno. Bogotá conserva sus indicadores agrícolas como faltantes, por lo que las asociaciones se calculan sobre 32 departamentos.
 
 <img width="1133" height="710" alt="image" src="https://github.com/user-attachments/assets/35170ea4-ebcc-41a6-8ffa-8f322c493bea" />
-**R6 — Diversidad agrícola.** El eje X muestra el número de cultivos alimentarios con producción positiva en 2025 y el eje Y la prevalencia de inseguridad alimentaria moderada o grave. Boyacá registra **88 cultivos y 16,40 %** de prevalencia, mientras Nariño registra **89 cultivos y 31,10 %**. Aunque su diversidad es casi igual, sus prevalencias difieren en **14,70 puntos porcentuales**.
+
+R6 — Diversidad agrícola. El eje X muestra el número de cultivos alimentarios con producción positiva en 2025 y el eje Y la prevalencia de inseguridad alimentaria moderada o grave. Boyacá registra 88 cultivos y 16,40 % de prevalencia, mientras Nariño registra 89 cultivos y 31,10 %. Aunque su diversidad es casi igual, sus prevalencias difieren en 14,70 puntos porcentuales.
 
 <img width="1140" height="707" alt="image" src="https://github.com/user-attachments/assets/43e1151d-da8c-4968-badb-9417e32f106a" />
-**R7 — Descenso productivo.** El eje X muestra el porcentaje de cultivos comparables cuya producción disminuyó entre 2024 y 2025; el eje Y presenta la misma prevalencia de inseguridad alimentaria. Chocó registra **18 de 43 cultivos en descenso (41,86 %)** y una prevalencia de **56,76 %**. Antioquia registra **30 de 70 cultivos en descenso (42,86 %)** y una prevalencia de **20,10 %**. Sus porcentajes de cultivos en descenso difieren en solo **1 punto porcentual**, pero sus prevalencias difieren en **36,66 puntos**. 
+
+R7 — Descenso productivo. El eje X muestra el porcentaje de cultivos comparables cuya producción disminuyó entre 2024 y 2025; el eje Y presenta la misma prevalencia de inseguridad alimentaria. Chocó registra 18 de 43 cultivos en descenso (41,86 %) y una prevalencia de 56,76 %. Antioquia registra 30 de 70 cultivos en descenso (42,86 %) y una prevalencia de 20,10 %. Sus porcentajes de cultivos en descenso difieren en solo 1 punto porcentual, pero sus prevalencias difieren en 36,66 puntos. 
 
 En los datos analizados, la diversidad agrícola y la proporción de cultivos en descenso no presentan una asociación fuerte con la inseguridad alimentaria departamental. Departamentos con indicadores agrícolas similares pueden tener prevalencias muy distintas. Estos resultados no permiten atribuir la inseguridad alimentaria a una sola de estas variables ni establecer causalidad.
 
